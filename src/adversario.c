@@ -3,9 +3,25 @@
 #include "adversario.h"
 #include "pokemon.h"
 
+#define NOMBRE_MAXIMO 20
+
+typedef struct adversario 
+{
+	char nombre[NOMBRE_MAXIMO];
+	lista_t *pokemones;
+
+	int b_ganadas;
+    int b_perdidas;
+    int b_empatadas;
+
+}adversario_t;
+
 adversario_t *adversario_crear(lista_t *pokemon)
 {
-	return NULL;
+	if(pokemon == NULL)
+		return NULL;
+
+	
 }
 
 bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,
