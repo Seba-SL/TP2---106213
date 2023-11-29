@@ -5,14 +5,39 @@
 #include "pokemon.h"
 #include "ataque.h"
 
-juego_t *juego_crear()
+typedef struct juego 
 {
-	return NULL;
+	jugada_t jugada;
+	resultado_jugada_t resultado_jugada;
+	lista_t * lista_pokemones;
+}juego_t;
+
+juego_t *juego_crear()
+{	
+
+	juego_t  *nuevo_juego = malloc(sizeof(juego_t) ) ;
+
+	if(nuevo_juego == NULL)
+		return NULL;
+
+	nuevo_juego->lista_pokemones = lista_crear();
+
+	if(nuevo_juego->lista_pokemones == NULL)return NULL;
+
+	return nuevo_juego;
+
 }
 
 JUEGO_ESTADO juego_cargar_pokemon(juego_t *juego, char *archivo)
 {
-	return ERROR_GENERAL;
+	if(juego == NULL || archivo == NULL)return ERROR_GENERAL;
+
+	juego->lista_pokemones = pokemon_cargar_archivo(archivo);
+
+	if(juego->lista_pokemones == NULL)return ERROR_GENERAL;
+
+
+	return TODO_OK;
 }
 
 lista_t *juego_listar_pokemon(juego_t *juego)
