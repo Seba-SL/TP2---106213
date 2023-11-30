@@ -5,8 +5,45 @@
 #include "pokemon.h"
 #include "ataque.h"
 
+#include <stdlib.h>
+
+typedef struct jugador
+{
+	lista_t *sus_pokemones;
+	int puntaje;
+
+}jugador_t;
+
+
+struct juego
+{
+
+	jugada_t jugada;
+	resultado_jugada_t resultado_jugada;
+	
+	lista_t * lista_pokemones;
+
+	jugador_t jugadores[2];
+
+	size_t cantidad_movimientos;
+
+};
+
+
 juego_t *juego_crear()
 {
+	juego_t *juego = calloc(1, sizeof(juego_t));
+
+	if(!juego)return NULL;
+
+	juego->lista_pokemones = lista_crear();
+
+	if(!juego->lista_pokemones)
+	{
+		juego_destruir(juego);
+		return NULL;
+	}
+
 	return NULL;
 }
 
