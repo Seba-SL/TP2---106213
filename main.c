@@ -5,6 +5,8 @@
 #include "src/adversario.h"
 #include <stdio.h>
 
+#define MAX_NOMBRE_ARCHIVO 30
+
 /**
 * Este main debe ser modificado para que el usuario pueda jugar el juego. Las
 * instrucciones existentes son solamente a modo ilustrativo del funcionamiento
@@ -16,13 +18,14 @@
 * ejemplo, mostrar puntaje actual y movimientos disponibles) para hacer que el
 * juego sea facil de utilizar.
 */
+char * pedir_archivo();
 
 int main(int argc, char *argv[])
 {
 	juego_t *juego = juego_crear();
 
 	//Pide al usuario un nombre de archivo de pokemones
-	char *archivo = pedir_archivo();
+	char *archivo = pedir_archivo(argv[1]);
 
 	//Carga los pokemon
 	juego_cargar_pokemon(juego, archivo);
@@ -36,9 +39,7 @@ int main(int argc, char *argv[])
 
 	//Pedirle al jugador por consola que ingrese los 3 nombres de pokemon que quiere utilizar
 	char *eleccionJugador1, *eleccionJugador2, *eleccionJugador3;
-	jugador_seleccionar_pokemon(juego, &eleccion_adversario1,
-				    &eleccion_adversario2,
-				    &eleccion_adversario3);
+	jugador_seleccionar_pokemon(juego, &eleccionJugador1,&eleccionJugador2,&eleccionJugador3);
 
 	//pedirle al adversario que indique los 3 pokemon que quiere usar
 	char *eleccionAdversario1, *eleccionAdversario2, *eleccionAdversario3;
@@ -75,4 +76,14 @@ int main(int argc, char *argv[])
 	}
 
 	juego_destruir(juego);
+}
+
+
+char*  pedir_archivo()
+{
+	char nombre_archivo[MAX_NOMBRE_ARCHIVO];
+
+	fscanf(stdin,"%s",nombre_archivo);
+
+	return nombre_archivo;
 }

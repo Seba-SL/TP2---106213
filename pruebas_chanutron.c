@@ -65,9 +65,13 @@ void seleccionar()
 					       "Charmander") ==
 			     POKEMON_INEXISTENTE,
 		     "Un jugador no puede seleccionar pokemon inexistente");
+
+
 	pa2m_afirmar(juego_seleccionar_pokemon(j, JUGADOR1, "Cacnea", "Pikachu",
 					       "Charmander") == TODO_OK,
 		     "Un jugador puede seleccionar 3 pokemon diferentes");
+
+	
 	pa2m_afirmar(
 		juego_seleccionar_pokemon(j, JUGADOR2, "Charmander", "Pikachu",
 					  "Cacnea") == TODO_OK,
