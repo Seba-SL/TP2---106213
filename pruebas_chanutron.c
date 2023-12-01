@@ -69,9 +69,6 @@ void seleccionar()
 					       "Charmander") == TODO_OK,
 		     "Un jugador puede seleccionar 3 pokemon diferentes");
 
-
-	printf("\n q recibi %d\n",juego_seleccionar_pokemon(j, JUGADOR1, "Cacnea", "Pikachu",
-					       "Charmander"));
 			 
 	pa2m_afirmar(
 		juego_seleccionar_pokemon(j, JUGADOR2, "Charmander", "Pikachu",
