@@ -4,13 +4,14 @@
 #include <stdbool.h>
 #include "pokemon.h"
 #include "ataque.h"
-
+#include "abb.h"
 #include <string.h>
 
 #include <stdlib.h>
 
 #define CANTIDAD_MOVIMIENTOS 9
 #define CANTIDAD_MIN_POKEMONES 4
+#define CANTIDAD_JUGADAS 9
 
 typedef struct ataque ataque_t;
 
@@ -22,6 +23,8 @@ typedef struct jugador
 	int puntaje;
 	bool eligio_jugadores;
 
+	abb_t *jugadas_disponibles;
+	
 }jugador_t;
 
 
@@ -36,11 +39,17 @@ struct juego
 	informacion_pokemon_t *info_pokemones;
 
 	jugador_t jugadores[2];
+	
 
 	size_t cantidad_movimientos;
 
 };
 
+ int comparador_abb(void *a, void *b)
+ {
+	return strcmp(a,b);
+ }
+ 
 
 juego_t *juego_crear()
 {
@@ -60,10 +69,15 @@ juego_t *juego_crear()
 	juego->jugadores[JUGADOR1].sus_pokemones = lista_crear();
 	juego->jugadores[JUGADOR2].sus_pokemones = lista_crear();
 
+	juego->jugadores[JUGADOR1].jugadas_disponibles = abb_crear(comparador_abb);
+	juego->jugadores[JUGADOR2].jugadas_disponibles = abb_crear(comparador_abb);
+
 	juego->cantidad_movimientos = CANTIDAD_MOVIMIENTOS;
 
 	juego->jugadores[JUGADOR1].eligio_jugadores = false;
 	juego->jugadores[JUGADOR2].eligio_jugadores = false;
+
+
 
 	return juego;
 }
@@ -76,6 +90,7 @@ juego_t *juego_crear()
 
 	lista_insertar(lista_pkm,actual);
  }
+
 
 JUEGO_ESTADO juego_cargar_pokemon(juego_t *juego, char *archivo)
 {
@@ -127,6 +142,27 @@ bool coincidencias(const char* nombre1, const char*nombre2, const char*nombre3)
 	return false;
 }
 
+void insertar_atk( const ataque_t *ataque , void * arbol_disponibles)
+{
+	
+	arbol_disponibles = abb_insertar(arbol_disponibles,(char*)ataque->nombre);
+
+}
+
+void asignar_jugadas_disponibles(abb_t *jugadas_disponibles,pokemon_t *pkm1,pokemon_t *pkm2 ,pokemon_t *pkm3)
+{
+	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm1));
+
+	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm2));
+
+	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm3));
+
+
+	con_cada_ataque(pkm1,insertar_atk,jugadas_disponibles);
+	con_cada_ataque(pkm2,insertar_atk,jugadas_disponibles);
+
+}
+
 JUEGO_ESTADO juego_seleccionar_pokemon(juego_t *juego, JUGADOR jugador, const char *nombre1, const char *nombre2,const char *nombre3)
 {
 	//validaciones
@@ -167,6 +203,8 @@ JUEGO_ESTADO juego_seleccionar_pokemon(juego_t *juego, JUGADOR jugador, const ch
 			juego->jugadores[JUGADOR2].sus_pokemones = lista_insertar(juego->jugadores[JUGADOR2].sus_pokemones,pkm3);
 		}else juego->jugadores[JUGADOR1].sus_pokemones = lista_insertar(juego->jugadores[JUGADOR1].sus_pokemones,pkm3);
 		
+
+	asignar_jugadas_disponibles(juego->jugadores[jugador].jugadas_disponibles,pkm1,pkm2,pkm3);
 
 	juego->jugadores[jugador].eligio_jugadores = true;
 	
@@ -369,6 +407,15 @@ void asignar_puntaje(int * puntaje , const ataque_t * ataque ,  RESULTADO_ATAQUE
 	}
 }
 
+bool jugada_disponible(abb_t *disponibles ,jugada_t jugada_jugador)
+{
+	
+	if( abb_quitar(disponibles,jugada_jugador.ataque) == NULL && abb_quitar(disponibles,jugada_jugador.pokemon) == NULL)
+		return false;
+
+	return true;
+}
+
 
 resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,jugada_t jugada_jugador2)
 {
@@ -376,8 +423,13 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 	resultado.jugador1 = ATAQUE_ERROR;
 	resultado.jugador2 = ATAQUE_ERROR;
 
-
 	if(!juego)
+		return resultado;
+
+	if(!jugada_disponible(juego->jugadores[JUGADOR1].jugadas_disponibles,jugada_jugador1))
+		return resultado;
+
+	if(!jugada_disponible(juego->jugadores[JUGADOR2].jugadas_disponibles,jugada_jugador2))
 		return resultado;
 
 	//saca los pokemones en sus mochilas , si es q existen
@@ -406,6 +458,7 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 
 	juego->cantidad_movimientos--;
 
+
 	return resultado;
 
 }
@@ -428,6 +481,9 @@ void juego_destruir(juego_t *juego)
 	lista_destruir_todo(juego->lista_pokemones,NULL);
 	lista_destruir_todo(juego->jugadores[JUGADOR1].sus_pokemones,NULL);
 	lista_destruir_todo(juego->jugadores[JUGADOR2].sus_pokemones,NULL);
+
+	abb_destruir_todo(juego->jugadores[JUGADOR1].jugadas_disponibles,NULL);
+	abb_destruir_todo(juego->jugadores[JUGADOR2].jugadas_disponibles,NULL);
 
 	pokemon_destruir_todo(juego->info_pokemones);
 
