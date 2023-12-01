@@ -3,19 +3,48 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+/*
+	El usuario del TDA puede acceder a lista_t y lista_iterador_t (iterador externo) y usar sus funciones
+
+	*no puede usar el tipo nodo_t
+	*no puede utilizar los campos de lista_t
 
 
+*/
+
+/******************************************-TIPOS DE DATOS DEFINIDOS-**************************************************/
+
+/*
+El nodo es una estructura que contiene un puntero a void y un puntero a un nodo siguiente
+
+tamaño del tipo nodo_t : 16 bytes
+*/
 
 typedef struct nodo {
 	void *elemento;
 	struct nodo *siguiente;
 } nodo_t;
 
+/*
+Una Lista es una estructura que contiene dos punteros a nodo_t al primero y al ultimo nodo de la lista, y un size_t (entero sin signoo)
+
+tamaño del tipo lista_t : 24 bytes
+*/
+
 struct lista {
 	nodo_t *inicio;
 	nodo_t *ultimo;
 	size_t cantidad;
 };
+
+/*
+
+El iterador es una estructura que contiene un puntero a lista_t y dos punteros a un nodo_t con el actual y el anterior
+
+tamaño del tipo nodo_t : 8 Bytes
+
+
+*/
 
 struct lista_iterador {
 	nodo_t *actual;
@@ -25,7 +54,6 @@ struct lista_iterador {
 
 void *eliminar_primero(lista_t *lista);
 void *eliminar_segundo(lista_t *lista, size_t posicion);
-nodo_t *asignar_nodo_posicion(lista_t *lista,size_t posicion);
 
 /**********************************************************************************************************/
 
@@ -85,26 +113,26 @@ void lista_iterador_destruir(lista_iterador_t *iterador)
 
 void lista_destruir_todo(lista_t *lista, void (*funcion)(void *))
 {
-	if (!lista)
+	if (!lista) // si la lista es NULL o vacia
 		return;
 
-	nodo_t *actual = lista->inicio; 
-	nodo_t *borrar; 
+	nodo_t *actual = lista->inicio; // guarda la referencia al primer nodo
+	nodo_t *borrar; // puntero auxiliar para realizar las liberaciónes
 
-	while (actual) 
+	while (actual) // si el actual es != NULL
 	{
-		if (funcion) 
-			funcion(actual->elemento);
+		if (funcion) // si la función != NULL
+			funcion(actual->elemento); // ejecuta la funcion con el elemento en argumento
 
-		borrar = actual; 
+		borrar = actual; // guardo referencia para liberar despues
 
 		actual =
-			actual->siguiente; 
+			actual->siguiente; // lectura invalida , no fue asignado por malloc
 
-		free(borrar);
+		free(borrar); // libero nodo
 	}
 
-	free(lista); 
+	free(lista); // libero lista
 }
 
 /**********************************************************************************************************/
@@ -113,75 +141,82 @@ void lista_destruir_todo(lista_t *lista, void (*funcion)(void *))
 
 lista_t *lista_insertar(lista_t *lista, void *elemento)
 {
-	if (lista == NULL)return NULL; 
+	if (lista == NULL)
+		return NULL; // si la lista no esta creada devuelve NULL
 
-	nodo_t *nodo = crear_nodo(elemento,NULL); 
-	
-	if (nodo == NULL)return NULL; 
+	nodo_t *nodo = crear_nodo(
+		elemento,
+		NULL); // se crea un nuevo nodo con el elemento y con el siguiente a NULL ,porque sera el ultimo
+	if (nodo == NULL)
+		return NULL; // si no se pudo crear devuelve null
 
-	if (lista_vacia(lista)){
+	if (lista_vacia(lista)) // si la lista esta vacia lo incerto en inicio
+	{
 		lista->inicio = nodo;
 		lista->ultimo = nodo;
-		lista->cantidad++; 
-		return lista; 
+		lista->cantidad++; // suma en uno
+		return lista; // devuelvo la lista con el nodo asignado
 	}
 
+	// si la lista no es vacia  , asigno el siguiente del ultimo al nuevo nodo
+
 	lista->ultimo->siguiente = nodo;
-	lista->ultimo = nodo; 
-	lista->cantidad++;
-	return lista;
+	lista->ultimo =
+		nodo; // ahora la lista apunta como ultimo al nodo ingresado
+	lista->cantidad++; // suma en uno
+	return lista; // devuelvo la lista con el nodo asignado
 }
 
 lista_t *lista_insertar_en_posicion(lista_t *lista, void *elemento,
 				    size_t posicion)
 {
 	if (lista == NULL)
-		return NULL; 
+		return NULL; // si la lista no esta creada devuelve NULL
 
-	if (posicion >=lista_tamanio(lista)) 
-		return lista_insertar(lista, elemento); 
-
-	
-	nodo_t *actual = asignar_nodo_posicion(lista,posicion);
-
-	lista->cantidad++;
-
-	if (posicion == 0) 
-	{
-		nodo_t *nuevo_nodo = crear_nodo(elemento, actual);
-		if (!nuevo_nodo)
-			return NULL;
-		lista->inicio = nuevo_nodo;
-		return lista;
-	}
-
-	nodo_t *nuevo_nodo = crear_nodo(elemento,actual->siguiente); 
-
-	if (!nuevo_nodo)
-		return NULL;
-
-	actual->siguiente =
-		nuevo_nodo; 
-
-	return lista;
-}
-
-nodo_t *asignar_ultimo_nodo(lista_t *lista,size_t posicion)
-{
-	if(lista == NULL)return NULL;
+	if (posicion >=
+	    lista_tamanio(
+		    lista)) // si la posicion a insertar es mayor a el tamaño inserto al final , tamaño empieza en 1 , posicion en 0
+		return lista_insertar(lista, elemento); // inserta a lo ultimo
 
 	nodo_t *actual = lista->inicio;
-
 	size_t i = 1;
-	
-	
+	// si la posicion es 0 , no entra a el bucle
 	while (actual && i < posicion) {
 		actual = actual->siguiente;
 		i++;
 	}
 
-	return actual;
-	
+	// sale del bucle con el nodo de la posicion buscada
+
+	lista->cantidad++;
+
+	// si la posicion es cero creo el nodo señalando al primero
+	if (posicion == 0) {
+		nodo_t *nuevo_nodo = crear_nodo(elemento, actual);
+		if (!nuevo_nodo)
+			return NULL;
+		lista->inicio = nuevo_nodo; // reasigno el primero
+		return lista;
+	}
+
+	// si la posicion esta entre el primero y el ultimo
+
+	// EJEMPLO CON C = ACTUAL , Z = nuevo_nodo
+	// A->B->[C]->D->NULL
+	//   [Z]->D->NULL
+	//  A->B->[C]->Z
+	// A->B->C->Z->D->NULL
+
+	nodo_t *nuevo_nodo = crear_nodo(
+		elemento,
+		actual->siguiente); // creo el nodo señalando al siguiente de la poscion
+	if (!nuevo_nodo)
+		return NULL;
+
+	actual->siguiente =
+		nuevo_nodo; // el que estaba en la poscion ahora señala al creado
+
+	return lista;
 }
 
 /**********************************************************************************************************/
@@ -190,9 +225,12 @@ nodo_t *asignar_ultimo_nodo(lista_t *lista,size_t posicion)
 
 bool lista_vacia(lista_t *lista)
 {
-	if (lista == NULL)return true;
-	
-	if (NULL == lista->inicio) {
+	// si es NULL
+	if (lista == NULL)
+		return true;
+
+	// si el primero y el ultimo son NULL
+	if (NULL == lista->inicio && lista_tamanio(lista) == 0) {
 		return true;
 	}
 
@@ -212,7 +250,7 @@ bool lista_iterador_tiene_siguiente(lista_iterador_t *iterador)
 	if (iterador == NULL)
 		return false;
 
-	return iterador->actual; 
+	return iterador->actual; // si actual es NULL es igual que false;
 }
 
 /**********************************************************************************************************/
@@ -237,9 +275,19 @@ void *lista_quitar(lista_t *lista)
 		return elemento;
 	}
 
-	
-	nodo_t *anteultimo = asignar_nodo_posicion(lista,lista_tamanio(lista) - 1);
+	size_t i = 1;
+	nodo_t *anteultimo = lista->inicio;
 	void *elemento = lista_ultimo(lista); // guardo lo que tiene Z
+
+	// asigno anterior como el nuevo ultimo
+	//    A->B->C->Z->NULL
+	//    0  1  2  3
+	// i= 1  2  3  4
+	//           ej  tamaño = 2
+	while (anteultimo != NULL && i < lista_tamanio(lista) - 1) {
+		anteultimo = anteultimo->siguiente;
+		i++;
+	}
 
 	nodo_t *borrar_nodo = anteultimo->siguiente;
 	// tengo anteultimo  = C
@@ -360,7 +408,16 @@ void *lista_elemento_en_posicion(lista_t *lista, size_t posicion)
 	if (lista_vacia(lista) || lista_tamanio(lista) < posicion + 1)
 		return NULL;
 
-	nodo_t *actual = asignar_nodo_posicion(lista,posicion);
+	size_t i = 0;
+
+	nodo_t *actual = lista->inicio; // para recorrer
+
+	while (actual->siguiente &&
+	       i < posicion) // mientras el siguiente EXISTA y no sobrepase POSICION
+	{
+		actual = actual->siguiente;
+		i++;
+	}
 
 	return actual->elemento;
 }
@@ -369,11 +426,11 @@ void *lista_buscar_elemento(lista_t *lista, int (*comparador)(void *, void *),
 			    void *contexto)
 {
 	if (lista == NULL || comparador == NULL)
-		return NULL; 
+		return NULL; // si comparador es NULL o si no existe la lista devuelve NULL
 
-	nodo_t *actual = lista->inicio, *aux; 
+	nodo_t *actual = lista->inicio, *aux; // se asigna el primer nodo
 
-	while (actual != NULL) 
+	while (actual != NULL) // si el primero
 	{
 		if (comparador(actual->elemento, contexto) == 0) {
 			return actual->elemento;
@@ -399,9 +456,7 @@ void *lista_ultimo(lista_t *lista)
 	return lista_vacia(lista) ? NULL : lista->ultimo->elemento;
 }
 
-
-
-
+/******************************************************************************************/
 
 /***********************  Funciónes Iteraciónes   **********************/
 
@@ -430,15 +485,20 @@ size_t lista_con_cada_elemento(lista_t *lista, bool (*funcion)(void *, void *),
 	size_t cantidad_elementos_iterados = 0;
 	bool check = true;
 
-	
+	// la actual no sera null , ya q se verifica q no esta vacia la lista s
 	nodo_t *actual = lista->inicio;
 
-	while (actual != NULL && check && cantidad_elementos_iterados < lista_tamanio(lista)) 
-	{
+	// mientras actual != NULL y la funcion devuelva true
+	while (actual != NULL && check &&
+	       cantidad_elementos_iterados <
+		       lista_tamanio(
+			       lista)) // si se supera a la cantidad descrita
+	{ // si esto se cumple
+		// se ejecuta la funcion
 		check = funcion(
 			actual->elemento,
-			contexto); 
-		actual = actual->siguiente; 
+			contexto); // y check es el resultado del nuevo actual
+		actual = actual->siguiente; // el actual es el siguiente
 
 		cantidad_elementos_iterados++;
 	}
@@ -446,3 +506,4 @@ size_t lista_con_cada_elemento(lista_t *lista, bool (*funcion)(void *, void *),
 	return cantidad_elementos_iterados;
 }
 
+/***************************************************************************************************************************************************************************************************************/
