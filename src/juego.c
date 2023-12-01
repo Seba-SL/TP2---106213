@@ -45,11 +45,32 @@ struct juego
 
 };
 
- int comparador_abb(void *a, void *b)
- {
-	return strcmp(a,b);
- }
+/************************************** Funciones auxiliares *******************************************************/
+
+int comparador_abb( void *a, void *b);
+
+void insertar_en_lista ( pokemon_t *actual , void *lista);
+
  
+bool coincidencias( const char *nombre1, const char*nombre2, const char *nombre3);
+
+
+void insertar_atk( const ataque_t *ataque , void *arbol_disponibles);
+
+
+void asignar_jugadas_disponibles( abb_t *jugadas_disponibles , pokemon_t *pkm1,pokemon_t *pkm2 , pokemon_t *pkm3);
+
+
+int comparar_nombres( void* pkm_actual ,void * objetivo );
+
+
+void asignar_resultado( RESULTADO_ATAQUE *resultado , const ataque_t *ataque , pokemon_t *oponente_pkm );
+
+
+/*************************************************************************************************************/
+
+
+
 
 juego_t *juego_crear()
 {
@@ -82,14 +103,8 @@ juego_t *juego_crear()
 	return juego;
 }
 
- void insertar_en_lista (pokemon_t *actual , void * lista)
- {
-	if(actual == NULL || lista == NULL)return;
 
-	lista_t * lista_pkm = lista;
 
-	lista_insertar(lista_pkm,actual);
- }
 
 
 JUEGO_ESTADO juego_cargar_pokemon(juego_t *juego, char *archivo)
@@ -112,9 +127,11 @@ JUEGO_ESTADO juego_cargar_pokemon(juego_t *juego, char *archivo)
 	if(juego->lista_pokemones == NULL)return ERROR_GENERAL;
 
 
-	
 	return TODO_OK;
 }
+
+
+
 
 lista_t *juego_listar_pokemon(juego_t *juego)
 {
@@ -124,44 +141,9 @@ lista_t *juego_listar_pokemon(juego_t *juego)
 	return juego->lista_pokemones;
 }
 
-bool coincidencias(const char* nombre1, const char*nombre2, const char*nombre3)
-{
-	if(strcmp(nombre1,nombre2) == 0 )
-		return true;
-	
-	if(strcmp(nombre1,nombre3) == 0 )
-		return true;
-
-	if(strcmp(nombre3,nombre2) == 0 )
-		return true;
-	
-	if(strcmp(nombre3,nombre1) == 0 )
-		return true;
-	
-
-	return false;
-}
-
-void insertar_atk( const ataque_t *ataque , void * arbol_disponibles)
-{
-	
-	arbol_disponibles = abb_insertar(arbol_disponibles,(char*)ataque->nombre);
-
-}
-
-void asignar_jugadas_disponibles(abb_t *jugadas_disponibles,pokemon_t *pkm1,pokemon_t *pkm2 ,pokemon_t *pkm3)
-{
-	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm1));
-
-	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm2));
-
-	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm3));
 
 
-	con_cada_ataque(pkm1,insertar_atk,jugadas_disponibles);
-	con_cada_ataque(pkm2,insertar_atk,jugadas_disponibles);
 
-}
 
 JUEGO_ESTADO juego_seleccionar_pokemon(juego_t *juego, JUGADOR jugador, const char *nombre1, const char *nombre2,const char *nombre3)
 {
@@ -211,88 +193,120 @@ JUEGO_ESTADO juego_seleccionar_pokemon(juego_t *juego, JUGADOR jugador, const ch
 	return TODO_OK;
 }
 
+
+		
+
+int juego_obtener_puntaje(juego_t *juego, JUGADOR jugador)
+{
+	return juego->jugadores[jugador].puntaje;
+}
+
+
+
+
+
+bool juego_finalizado(juego_t *juego)
+{
+	if(juego->cantidad_movimientos == 0)
+		return true;
+
+	return false;
+}
+
+
+
+
+
+void juego_destruir(juego_t *juego)
+{
+	lista_destruir_todo(juego->lista_pokemones,NULL);
+	lista_destruir_todo(juego->jugadores[JUGADOR1].sus_pokemones,NULL);
+	lista_destruir_todo(juego->jugadores[JUGADOR2].sus_pokemones,NULL);
+
+	abb_destruir_todo(juego->jugadores[JUGADOR1].jugadas_disponibles,NULL);
+	abb_destruir_todo(juego->jugadores[JUGADOR2].jugadas_disponibles,NULL);
+
+	pokemon_destruir_todo(juego->info_pokemones);
+
+	free(juego);
+}
+
+
+
+
+
+
+
+
+/****************************Implementacion de auxiliares******************************/
+
+
+
+
+ void insertar_en_lista (pokemon_t *actual , void * lista)
+ {
+	if(actual == NULL || lista == NULL)return;
+
+	lista_t * lista_pkm = lista;
+
+	lista_insertar(lista_pkm,actual);
+ }
+
+
+
+
+bool coincidencias(const char* nombre1, const char*nombre2, const char*nombre3)
+{
+	if(strcmp(nombre1,nombre2) == 0 )
+		return true;
+	
+	if(strcmp(nombre1,nombre3) == 0 )
+		return true;
+
+	if(strcmp(nombre3,nombre2) == 0 )
+		return true;
+	
+	if(strcmp(nombre3,nombre1) == 0 )
+		return true;
+	
+
+	return false;
+}
+
+
+
+void insertar_atk( const ataque_t *ataque , void * arbol_disponibles)
+{
+	
+	arbol_disponibles = abb_insertar(arbol_disponibles,(char*)ataque->nombre);
+
+}
+
+
+
+
+
+void asignar_jugadas_disponibles(abb_t *jugadas_disponibles,pokemon_t *pkm1,pokemon_t *pkm2 ,pokemon_t *pkm3)
+{
+	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm1));
+
+	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm2));
+
+	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm3));
+
+
+	con_cada_ataque(pkm1,insertar_atk,jugadas_disponibles);
+	con_cada_ataque(pkm2,insertar_atk,jugadas_disponibles);
+
+}
+
+
 int comparar_nombres(void* pkm_actual ,void * objetivo )
 {
 	return strcmp(pokemon_nombre(pkm_actual),objetivo);
 }
 
-RESULTADO_ATAQUE resultado_individual(enum TIPO atk_pkm1,enum TIPO tipo_pkm2)
-{
 
-if(atk_pkm1 == FUEGO)
-	{
-		if(tipo_pkm2 == PLANTA)
-		{	
-			return ATAQUE_EFECTIVO;
-		}
-
-		if(tipo_pkm2 == AGUA)
-		{	
-			return  ATAQUE_INEFECTIVO;
-		}
-
-	}
-
-	if(atk_pkm1 == PLANTA)
-	{
-		if(tipo_pkm2 == ROCA)
-		{	
-			return ATAQUE_EFECTIVO;
-		}
-
-		if(tipo_pkm2 == FUEGO)
-		{	
-			return ATAQUE_INEFECTIVO;
-		}
-
-	}
-
-
-	if(atk_pkm1 == ROCA)
-	{
-		if(tipo_pkm2 == ELECTRICO)
-		{	
-			return ATAQUE_EFECTIVO;
-		}
-
-		if(tipo_pkm2 == PLANTA)
-		{	
-			return ATAQUE_INEFECTIVO;
-		}
-
-	}
-
-	if(atk_pkm1 == ELECTRICO)
-	{
-		if(tipo_pkm2 == AGUA)
-		{	
-			return ATAQUE_EFECTIVO;
-		}
-
-		if(tipo_pkm2 == ROCA)
-		{	
-			return ATAQUE_INEFECTIVO;
-		}
-
-	}
-
-	if(atk_pkm1 == AGUA)
-	{
-		if(tipo_pkm2 == FUEGO)
-		{	
-			return ATAQUE_EFECTIVO;
-		}
-
-		if(tipo_pkm2 == ELECTRICO)
-		{	
-			return ATAQUE_INEFECTIVO;
-		}
-
-	}
-
-	return ATAQUE_REGULAR;
-
-}
 
 void asignar_resultado(RESULTADO_ATAQUE *resultado , const ataque_t *ataque ,pokemon_t *oponente_pkm )
 {	
@@ -322,7 +336,7 @@ void asignar_resultado(RESULTADO_ATAQUE *resultado , const ataque_t *ataque ,pok
 			return;
 		}
 
-		if(pokemon_tipo(oponente_pkm) == FUEGO)
+		if(pokemon_tipo(oponente_pkm) == AGUA)
 		{	
 			*resultado = ATAQUE_INEFECTIVO;
 			return;
@@ -461,31 +475,4 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 
 	return resultado;
 
-}
-
-int juego_obtener_puntaje(juego_t *juego, JUGADOR jugador)
-{
-	return juego->jugadores[jugador].puntaje;
-}
-
-bool juego_finalizado(juego_t *juego)
-{
-	if(juego->cantidad_movimientos == 0)
-		return true;
-
-	return false;
-}
-
-void juego_destruir(juego_t *juego)
-{
-	lista_destruir_todo(juego->lista_pokemones,NULL);
-	lista_destruir_todo(juego->jugadores[JUGADOR1].sus_pokemones,NULL);
-	lista_destruir_todo(juego->jugadores[JUGADOR2].sus_pokemones,NULL);
-
-	abb_destruir_todo(juego->jugadores[JUGADOR1].jugadas_disponibles,NULL);
-	abb_destruir_todo(juego->jugadores[JUGADOR2].jugadas_disponibles,NULL);
-
-	pokemon_destruir_todo(juego->info_pokemones);
-
-	free(juego);
 }
