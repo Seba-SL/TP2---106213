@@ -6,8 +6,10 @@
 #include "ataque.h"
 #include "abb.h"
 #include <string.h>
-
+#include <stdio.h>//borrar
 #include <stdlib.h>
+
+#include <math.h>
 
 #define CANTIDAD_MOVIMIENTOS 9
 #define CANTIDAD_MIN_POKEMONES 4
@@ -67,7 +69,13 @@ int comparar_nombres( void* pkm_actual ,void * objetivo );
 void asignar_resultado( RESULTADO_ATAQUE *resultado , const ataque_t *ataque , pokemon_t *oponente_pkm );
 
 
-/*************************************************************************************************************/
+bool jugada_disponible(abb_t *disponibles ,jugada_t jugada_jugador);
+
+
+void asignar_puntaje(int * puntaje , const ataque_t * ataque ,  RESULTADO_ATAQUE efectividad);
+
+
+/******************************************************************************************************************/
 
 
 
@@ -190,11 +198,63 @@ JUEGO_ESTADO juego_seleccionar_pokemon(juego_t *juego, JUGADOR jugador, const ch
 
 	juego->jugadores[jugador].eligio_jugadores = true;
 	
+	printf("\nSe seleccionaron: %s , %s , %s\n",nombre1,nombre2,nombre3);//borrar
+
 	return TODO_OK;
 }
 
 
 		
+resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,jugada_t jugada_jugador2)
+{
+	resultado_jugada_t resultado;
+	resultado.jugador1 = ATAQUE_ERROR;
+	resultado.jugador2 = ATAQUE_ERROR;
+
+	if(!juego)
+		return resultado;
+
+	if(!jugada_disponible(juego->jugadores[JUGADOR1].jugadas_disponibles,jugada_jugador1))
+		return resultado;
+
+	if(!jugada_disponible(juego->jugadores[JUGADOR2].jugadas_disponibles,jugada_jugador2))
+		return resultado;
+
+	//saca los pokemones en sus mochilas , si es q existen
+	pokemon_t *pkm1  = lista_buscar_elemento(juego->jugadores[JUGADOR1].sus_pokemones,comparar_nombres,jugada_jugador1.pokemon);
+	pokemon_t *pkm2  = lista_buscar_elemento(juego->jugadores[JUGADOR2].sus_pokemones,comparar_nombres,jugada_jugador2.pokemon);
+
+	
+	
+	if(!pkm1 || !pkm2)
+		return resultado;
+
+	//los pokemons tienen esos ataques?
+	const ataque_t *atk1  = pokemon_buscar_ataque( pkm1 , jugada_jugador1.ataque);
+	const ataque_t *atk2 = pokemon_buscar_ataque( pkm2 , jugada_jugador2.ataque); 
+
+	if(!atk1 || !atk2 )
+		return resultado;
+
+	asignar_resultado( &resultado.jugador1 , atk1 , pkm2 );
+	asignar_resultado( &resultado.jugador2 , atk2 , pkm1 );
+
+
+	asignar_puntaje( &juego->jugadores[JUGADOR1].puntaje , atk1 ,  resultado.jugador1 );
+
+	asignar_puntaje( &juego->jugadores[JUGADOR2].puntaje , atk2,  resultado.jugador2 );
+	
+	printf("\nPuntaje jugador 1 %d\n",juego->jugadores[JUGADOR1].puntaje);
+	printf("\nPuntaje jugador 2 %d\n",juego->jugadores[JUGADOR2].puntaje);
+	
+	juego->cantidad_movimientos--;
+
+	printf("\n%s ataca %s\n",jugada_jugador1.pokemon,jugada_jugador1.ataque);
+	printf("\n%s ataca %s\n",jugada_jugador2.pokemon,jugada_jugador2.ataque);
+
+	return resultado;
+
+}
 
 int juego_obtener_puntaje(juego_t *juego, JUGADOR jugador)
 {
@@ -240,6 +300,13 @@ void juego_destruir(juego_t *juego)
 
 /****************************Implementacion de auxiliares******************************/
 
+
+
+
+ int comparador_abb(void *a, void *b)
+ {
+	return strcmp(a,b);
+ }
 
 
 
@@ -406,19 +473,37 @@ void asignar_resultado(RESULTADO_ATAQUE *resultado , const ataque_t *ataque ,pok
 
 void asignar_puntaje(int * puntaje , const ataque_t * ataque ,  RESULTADO_ATAQUE efectividad)
 {
-	switch (efectividad)
+	printf("\nAtaque %s : %d\n",ataque->nombre,ataque->poder);//borrar
+
+
+	switch(efectividad)
 	{
 		case ATAQUE_EFECTIVO:
-			*puntaje =(int) ataque->poder*3;
-			break;
+			puts("Efectivo"); //borrar
+			*puntaje = *puntaje +  (int)ataque->poder*3;
+			printf("\nPuntaje: %d\n",*puntaje);//borrar
+			return ;
 		
 		case ATAQUE_INEFECTIVO:
-			*puntaje = (int) ataque->poder/2;
-			break;
+			puts("Inefectivo");//borrar
+			int aux = (int)floor(	((float)ataque->poder)/((float)2)	) + 1 ;
+			*puntaje = *puntaje + aux ;
+			printf("\nPuntaje: %d\n",*puntaje);//borrar
+			return;
 	
 		default:
-			*puntaje = (int) ataque->poder;
+			puts("Normal");//borrar
+			*puntaje = *puntaje + (int) ataque->poder;
+			printf("\nPuntaje: %d\n",*puntaje);//borrar
+			return ;
 	}
+
+
+	//*puntaje = *puntaje + (int) ataque->poder;
+
+
+
+	
 }
 
 bool jugada_disponible(abb_t *disponibles ,jugada_t jugada_jugador)
@@ -430,49 +515,3 @@ bool jugada_disponible(abb_t *disponibles ,jugada_t jugada_jugador)
 	return true;
 }
 
-
-resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,jugada_t jugada_jugador2)
-{
-	resultado_jugada_t resultado;
-	resultado.jugador1 = ATAQUE_ERROR;
-	resultado.jugador2 = ATAQUE_ERROR;
-
-	if(!juego)
-		return resultado;
-
-	if(!jugada_disponible(juego->jugadores[JUGADOR1].jugadas_disponibles,jugada_jugador1))
-		return resultado;
-
-	if(!jugada_disponible(juego->jugadores[JUGADOR2].jugadas_disponibles,jugada_jugador2))
-		return resultado;
-
-	//saca los pokemones en sus mochilas , si es q existen
-	pokemon_t *pkm1  = lista_buscar_elemento(juego->jugadores[JUGADOR1].sus_pokemones,comparar_nombres,jugada_jugador1.pokemon);
-	pokemon_t *pkm2  = lista_buscar_elemento(juego->jugadores[JUGADOR2].sus_pokemones,comparar_nombres,jugada_jugador2.pokemon);
-
-	
-	
-	if(!pkm1 || !pkm2)
-		return resultado;
-
-	//los pokemons tienen esos ataques?
-	const ataque_t *atk1  = pokemon_buscar_ataque( pkm1 , jugada_jugador1.ataque);
-	const ataque_t *atk2 = pokemon_buscar_ataque( pkm2 , jugada_jugador2.ataque); 
-
-	if(!atk1 || !atk2 )
-		return resultado;
-
-	asignar_resultado( &resultado.jugador1 , atk1 , pkm2 );
-	asignar_resultado( &resultado.jugador2 , atk2 , pkm1 );
-
-
-	asignar_puntaje( &juego->jugadores[JUGADOR1].puntaje , atk1 ,  resultado.jugador1 );
-	asignar_puntaje( &juego->jugadores[JUGADOR2].puntaje , atk2,  resultado.jugador2 );
-	
-
-	juego->cantidad_movimientos--;
-
-
-	return resultado;
-
-}
