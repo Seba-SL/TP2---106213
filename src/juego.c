@@ -6,11 +6,9 @@
 #include "ataque.h"
 #include "abb.h"
 #include <string.h>
-#include <stdio.h>//borrar
+
 #include <stdlib.h>
-
-#include <math.h>
-
+#include <stdio.h>
 #define CANTIDAD_MOVIMIENTOS 9
 #define CANTIDAD_MIN_POKEMONES 4
 #define CANTIDAD_JUGADAS 9
@@ -25,7 +23,7 @@ typedef struct jugador
 	int puntaje;
 	bool eligio_jugadores;
 
-	abb_t *jugadas_disponibles;
+	
 	
 }jugador_t;
 
@@ -41,6 +39,8 @@ struct juego
 	informacion_pokemon_t *info_pokemones;
 
 	jugador_t jugadores[2];
+
+	abb_t *jugadas_disponibles;
 	
 
 	size_t cantidad_movimientos;
@@ -98,8 +98,8 @@ juego_t *juego_crear()
 	juego->jugadores[JUGADOR1].sus_pokemones = lista_crear();
 	juego->jugadores[JUGADOR2].sus_pokemones = lista_crear();
 
-	juego->jugadores[JUGADOR1].jugadas_disponibles = abb_crear(comparador_abb);
-	juego->jugadores[JUGADOR2].jugadas_disponibles = abb_crear(comparador_abb);
+	juego->jugadas_disponibles = abb_crear(comparador_abb);
+	
 
 	juego->cantidad_movimientos = CANTIDAD_MOVIMIENTOS;
 
@@ -194,11 +194,11 @@ JUEGO_ESTADO juego_seleccionar_pokemon(juego_t *juego, JUGADOR jugador, const ch
 		}else juego->jugadores[JUGADOR1].sus_pokemones = lista_insertar(juego->jugadores[JUGADOR1].sus_pokemones,pkm3);
 		
 
-	asignar_jugadas_disponibles(juego->jugadores[jugador].jugadas_disponibles,pkm1,pkm2,pkm3);
+	asignar_jugadas_disponibles(juego->jugadas_disponibles,pkm1,pkm2,pkm3);
 
 	juego->jugadores[jugador].eligio_jugadores = true;
 	
-	printf("\nSe seleccionaron: %s , %s , %s\n",nombre1,nombre2,nombre3);//borrar
+
 
 	return TODO_OK;
 }
@@ -214,12 +214,10 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 	if(!juego)
 		return resultado;
 
-	if(!jugada_disponible(juego->jugadores[JUGADOR1].jugadas_disponibles,jugada_jugador1))
+	if(!jugada_disponible(juego->jugadas_disponibles,jugada_jugador1))
 		return resultado;
 
-	if(!jugada_disponible(juego->jugadores[JUGADOR2].jugadas_disponibles,jugada_jugador2))
-		return resultado;
-
+	
 	//saca los pokemones en sus mochilas , si es q existen
 	pokemon_t *pkm1  = lista_buscar_elemento(juego->jugadores[JUGADOR1].sus_pokemones,comparar_nombres,jugada_jugador1.pokemon);
 	pokemon_t *pkm2  = lista_buscar_elemento(juego->jugadores[JUGADOR2].sus_pokemones,comparar_nombres,jugada_jugador2.pokemon);
@@ -244,13 +242,10 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 
 	asignar_puntaje( &juego->jugadores[JUGADOR2].puntaje , atk2,  resultado.jugador2 );
 	
-	printf("\nPuntaje jugador 1 %d\n",juego->jugadores[JUGADOR1].puntaje);
-	printf("\nPuntaje jugador 2 %d\n",juego->jugadores[JUGADOR2].puntaje);
+
 	
 	juego->cantidad_movimientos--;
 
-	printf("\n%s ataca %s\n",jugada_jugador1.pokemon,jugada_jugador1.ataque);
-	printf("\n%s ataca %s\n",jugada_jugador2.pokemon,jugada_jugador2.ataque);
 
 	return resultado;
 
@@ -283,8 +278,8 @@ void juego_destruir(juego_t *juego)
 	lista_destruir_todo(juego->jugadores[JUGADOR1].sus_pokemones,NULL);
 	lista_destruir_todo(juego->jugadores[JUGADOR2].sus_pokemones,NULL);
 
-	abb_destruir_todo(juego->jugadores[JUGADOR1].jugadas_disponibles,NULL);
-	abb_destruir_todo(juego->jugadores[JUGADOR2].jugadas_disponibles,NULL);
+	abb_destruir_todo(juego->jugadas_disponibles,NULL);
+	
 
 	pokemon_destruir_todo(juego->info_pokemones);
 
@@ -403,7 +398,7 @@ void asignar_resultado(RESULTADO_ATAQUE *resultado , const ataque_t *ataque ,pok
 			return;
 		}
 
-		if(pokemon_tipo(oponente_pkm) == AGUA)
+		if(pokemon_tipo(oponente_pkm) == FUEGO)
 		{	
 			*resultado = ATAQUE_INEFECTIVO;
 			return;
@@ -471,30 +466,40 @@ void asignar_resultado(RESULTADO_ATAQUE *resultado , const ataque_t *ataque ,pok
 
 }
 
+float redondear(float numero) {
+    int entero = (int)numero; // Obtenemos la parte entera del número
+    float parte_decimal = numero -  (float)entero; // Obtenemos la parte decimal
+    
+    if (parte_decimal > 0) {
+        return (float)entero + 1; // Si hay parte decimal, redondeamos hacia arriba sumando 1 a la parte entera
+    } else {
+        return numero; // Si es un número entero, lo dejamos sin modificar
+    }
+}
+
+
 void asignar_puntaje(int * puntaje , const ataque_t * ataque ,  RESULTADO_ATAQUE efectividad)
 {
-	printf("\nAtaque %s : %d\n",ataque->nombre,ataque->poder);//borrar
-
-
+	float aux = redondear((float)ataque->poder/((float)2));
+	
 	switch(efectividad)
 	{
 		case ATAQUE_EFECTIVO:
-			puts("Efectivo"); //borrar
+		
 			*puntaje = *puntaje +  (int)ataque->poder*3;
-			printf("\nPuntaje: %d\n",*puntaje);//borrar
+			
 			return ;
 		
 		case ATAQUE_INEFECTIVO:
-			puts("Inefectivo");//borrar
-			int aux = (int)floor(	((float)ataque->poder)/((float)2)	) + 1 ;
-			*puntaje = *puntaje + aux ;
-			printf("\nPuntaje: %d\n",*puntaje);//borrar
+			
+			*puntaje = *puntaje + (int)aux ;
+			
 			return;
 	
 		default:
-			puts("Normal");//borrar
+			
 			*puntaje = *puntaje + (int) ataque->poder;
-			printf("\nPuntaje: %d\n",*puntaje);//borrar
+		
 			return ;
 	}
 
