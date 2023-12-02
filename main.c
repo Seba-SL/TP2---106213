@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "menu.h"
+
 #define MAX_NOMBRE 30
 #define MAX_NOMBRE_ARCHIVO 50
 
