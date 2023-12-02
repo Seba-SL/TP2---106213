@@ -124,7 +124,7 @@ JUEGO_ESTADO juego_cargar_pokemon(juego_t *juego, char *archivo)
 	if(juego->info_pokemones  == NULL)return ERROR_GENERAL;
 
 
-	if(pokemon_cantidad(juego->info_pokemones ) < 4)
+	if(pokemon_cantidad(juego->info_pokemones ) < CANTIDAD_MIN_POKEMONES)
 	{	
 		pokemon_destruir_todo(juego->info_pokemones);
 		return POKEMON_INSUFICIENTES;
@@ -133,8 +133,11 @@ JUEGO_ESTADO juego_cargar_pokemon(juego_t *juego, char *archivo)
 	con_cada_pokemon(juego->info_pokemones ,insertar_en_lista,juego->lista_pokemones);
 
 
-	if(lista_tamanio(juego->lista_pokemones) < 4)return POKEMON_INSUFICIENTES;
-
+	if(lista_tamanio(juego->lista_pokemones) < CANTIDAD_MIN_POKEMONES)
+	{
+		lista_destruir_todo(juego->lista_pokemones,NULL);
+		return POKEMON_INSUFICIENTES;
+	}
 	
 	if(juego->lista_pokemones == NULL)return ERROR_GENERAL;
 
