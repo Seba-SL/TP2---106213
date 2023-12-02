@@ -1,12 +1,11 @@
 #include <stdlib.h>
 #include "pokemon.h"
 #include "tipo.h"
-#include <stdio.h>
 #include "ataque.h"
 #include <string.h>
 #include <errno.h>
 #include <stdbool.h>
-
+#include <stdio.h>
 #define MAX_NOMBRE 30
 #define CANTIDAD_ATAQUES 3
 
@@ -35,7 +34,7 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	pokemon_t *pokemon_n, pkm_aux;
 
 	if (path == NULL) {
-		fprintf(stderr, "\n ERROR NOMBRE DE ARCHIVO\n");
+	
 		return NULL;
 	}
 
@@ -52,16 +51,14 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	fo = fopen(path, "r");
 
 	if (fo == NULL) {
-		fprintf(stderr, "\nERRROR AL ABRIR EL ARCHIVO %s (%s)\n", path,
-			strerror(errno));
+		
 		free(ip);
 
 		return NULL;
 	}
 
 	if (!cargar_pokemon(fo, &pkm_aux)) {
-		fprintf(stderr,
-			"\nERRROR AL CARGAR DATOS AL PRIMER POKEMON \n");
+		
 		fclose(fo);
 		free(ip);
 		return NULL;
@@ -70,9 +67,7 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	pokemon_n = (pokemon_t *)malloc(sizeof(pokemon_t));
 
 	if (pokemon_n == NULL) {
-		fprintf(stderr,
-			"\nERRROR AL ASIGNAR MEMORIA AL PRIMER POKEMON (%s)\n",
-			strerror(errno));
+		
 		fclose(fo);
 		pokemon_destruir_todo(ip);
 		return NULL;
@@ -89,9 +84,7 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	while (!feof(fo)) {
 		//carga en stack
 		if (!cargar_pokemon(fo, &pkm_aux)) {
-			fprintf(stderr,
-				"\nERRROR AL CARGAR DATOS AL %zu POKEMON \n",
-				ip->cantidad + 1);
+		
 			fclose(fo);
 
 			return ip;
@@ -100,10 +93,9 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 		pokemon_n = (pokemon_t *)realloc(
 			pokemon_n, (ip->cantidad + 1) * sizeof(pokemon_t));
 
-		if (pokemon_n == NULL) {
-			fprintf(stderr,
-				"\nERRROR AL CARGAR MEMORIA AL POKEMON N° %zu \n",
-				ip->cantidad + 1);
+		if (pokemon_n == NULL) 
+		{
+			
 			// no libero ip , ya que el primero se cargo correctamente y permanece apuntando a ese mismo
 			fclose(fo);
 			return ip;
@@ -113,17 +105,13 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 			pokemon_n; // apunta al primer pokemon en el nuevo bloque de memoria asignado por realloc
 
 		if (!copiarPokemon(pokemon_n + ip->cantidad, &pkm_aux)) {
-			fprintf(stderr,
-				"\nERRROR AL CARGAR AL POKEMON N° %zu\n",
-				ip->cantidad + 1);
+			
 			// reasigno memoria sin el bloque nuevo sin cargar
 			pokemon_n = (pokemon_t *)realloc(
 				pokemon_n, (ip->cantidad) * sizeof(pokemon_t));
 
 			if (pokemon_n == NULL) {
-				fprintf(stderr,
-					"\nERRROR AL CARGAR MEMORIA AL POKEMON N° %zu , DESPUES DE UNA CARGA INVALIDA \n",
-					ip->cantidad + 1);
+				
 				// no libero ip , ya que el primero se cargo correctamente y permanece apuntando a ese mismo
 				fclose(fo);
 				free(ip);
@@ -140,7 +128,9 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	}
 
 	if (!ordenarAlfabeto_pokemones(ip)) {
-		fprintf(stderr, "\nERROR AL ORDENAR POKEMONES\n");
+		fclose(fo);
+		free(ip);
+		return NULL;
 	}
 
 	fclose(fo);
@@ -156,7 +146,7 @@ bool cargar_pokemon(FILE *fo, pokemon_t *pokemon_n)
 	if (pokemon_n->nombre[0] == '\0' ||
 	    tipoInicial == '\0') { // Si algun dato esta vacio devuelvo false
 
-		fprintf(stderr, "\nEL ARCHIVO CONTIENE CAMPOS VACIOS\n");
+		
 		return false;
 	}
 
@@ -168,8 +158,7 @@ bool cargar_pokemon(FILE *fo, pokemon_t *pokemon_n)
 			     &tipoInicial, &pokemon_n->Ataques[j].poder);
 
 		if (aux != CANTIDAD_ATAQUES) {
-			fprintf(stderr,
-				"\nEL ARCHIVO CONTIENE CAMPOS VACIOS\n");
+		
 			return false;
 		}
 

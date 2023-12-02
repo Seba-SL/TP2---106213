@@ -215,7 +215,10 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 		return resultado;
 
 	if(!jugada_disponible(juego->jugadas_disponibles,jugada_jugador1))
+	{	
+		juego->cantidad_movimientos--;
 		return resultado;
+	}
 
 	
 	//saca los pokemones en sus mochilas , si es q existen
@@ -246,7 +249,6 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 	
 	juego->cantidad_movimientos--;
 
-
 	return resultado;
 
 }
@@ -262,10 +264,13 @@ int juego_obtener_puntaje(juego_t *juego, JUGADOR jugador)
 
 bool juego_finalizado(juego_t *juego)
 {
-	if(juego->cantidad_movimientos == 0)
-		return true;
 
-	return false;
+	printf("\n jugadas disponibles %zu\n",juego->cantidad_movimientos);
+
+	if(juego->cantidad_movimientos > 0)
+		return false;
+
+	return true;
 }
 
 
@@ -274,6 +279,8 @@ bool juego_finalizado(juego_t *juego)
 
 void juego_destruir(juego_t *juego)
 {
+	if(juego == NULL)return ;
+
 	lista_destruir_todo(juego->lista_pokemones,NULL);
 	lista_destruir_todo(juego->jugadores[JUGADOR1].sus_pokemones,NULL);
 	lista_destruir_todo(juego->jugadores[JUGADOR2].sus_pokemones,NULL);
@@ -502,10 +509,6 @@ void asignar_puntaje(int * puntaje , const ataque_t * ataque ,  RESULTADO_ATAQUE
 		
 			return ;
 	}
-
-
-	//*puntaje = *puntaje + (int) ataque->poder;
-
 
 
 	
