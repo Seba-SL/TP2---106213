@@ -29,7 +29,8 @@
 void bienvenida();
 char* pedir_archivo();
 void mostrar_pokemon_disponibles(juego_t * juego);
- void jugador_seleccionar_pokemon(juego_t *juego, char * eleccionJugador1,char * eleccionJugador2,char * eleccionJugador3);
+void jugador_seleccionar_pokemon(juego_t *juego, char * eleccionJugador1,char * eleccionJugador2,char * eleccionJugador3);
+jugada_t jugador_pedir_nombre_y_ataque();
 
 
 int main(int argc, char *argv[])
@@ -62,6 +63,37 @@ int main(int argc, char *argv[])
 	juego_seleccionar_pokemon(juego, JUGADOR1, eleccionJugador1,eleccionJugador2, eleccionJugador3);
 
 
+	//Pedirle al jugador por consola que ingrese los 3 nombres de pokemon que quiere utilizar
+	char *eleccion_adversario1 = NULL, *eleccion_adversario2 = NULL, *eleccion_adversario3 = NULL;
+	jugador_seleccionar_pokemon(juego, eleccion_adversario1,eleccion_adversario2,eleccion_adversario3);
+
+
+		//Seleccionar los pokemon de los jugadoresd 
+	juego_seleccionar_pokemon(juego, JUGADOR2, eleccion_adversario1,eleccion_adversario2, eleccion_adversario3);
+
+
+
+
+	while (!juego_finalizado(juego)) {
+		resultado_jugada_t resultado_ronda;
+
+		//Pide al jugador que ingrese por consola el pokemon y ataque para la siguiente ronda
+		jugada_t jugada_jugador = jugador_pedir_nombre_y_ataque();
+
+		//Pide al adversario que informe el pokemon y ataque para la siguiente ronda
+		jugada_t jugada_adversario =
+			 jugador_pedir_nombre_y_ataque();
+
+		//jugar la ronda y después comprobar que esté todo ok, si no, volver a pedir la jugada del jugador
+		resultado_ronda = juego_jugar_turno(juego, jugada_jugador,
+						    jugada_adversario);
+
+		//Si se pudo jugar el turno, le informo al adversario la jugada realizada por el jugador
+		//adversario_informar_jugada(adversario, jugada_jugador);
+
+		 printf("\nRonda:P1 %d P2 %d \n",resultado_ronda.jugador1,resultado_ronda.jugador2);
+	}
+
 
 	free(eleccionJugador1);
 	free(eleccionJugador2);
@@ -69,6 +101,15 @@ int main(int argc, char *argv[])
 	juego_destruir(juego);
 }
 
+jugada_t jugador_pedir_nombre_y_ataque()
+{
+	jugada_t nueva;
+
+	strcpy(nueva.pokemon,"Pikachu");
+	strcpy(nueva.ataque,"Latigo");
+
+	return nueva;
+}
 
 char*  pedir_archivo()
 {
