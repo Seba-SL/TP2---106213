@@ -124,7 +124,11 @@ JUEGO_ESTADO juego_cargar_pokemon(juego_t *juego, char *archivo)
 	if(juego->info_pokemones  == NULL)return ERROR_GENERAL;
 
 
-	if(pokemon_cantidad(juego->info_pokemones ) < 4)return POKEMON_INSUFICIENTES;
+	if(pokemon_cantidad(juego->info_pokemones ) < 4)
+	{	
+		pokemon_destruir_todo(juego->info_pokemones);
+		return POKEMON_INSUFICIENTES;
+	}
 
 	con_cada_pokemon(juego->info_pokemones ,insertar_en_lista,juego->lista_pokemones);
 
@@ -193,13 +197,10 @@ JUEGO_ESTADO juego_seleccionar_pokemon(juego_t *juego, JUGADOR jugador, const ch
 			juego->jugadores[JUGADOR2].sus_pokemones = lista_insertar(juego->jugadores[JUGADOR2].sus_pokemones,pkm3);
 		}else juego->jugadores[JUGADOR1].sus_pokemones = lista_insertar(juego->jugadores[JUGADOR1].sus_pokemones,pkm3);
 		
-
 	asignar_jugadas_disponibles(juego->jugadas_disponibles,pkm1,pkm2,pkm3);
 
 	juego->jugadores[jugador].eligio_jugadores = true;
 	
-
-
 	return TODO_OK;
 }
 
@@ -265,8 +266,6 @@ int juego_obtener_puntaje(juego_t *juego, JUGADOR jugador)
 bool juego_finalizado(juego_t *juego)
 {
 
-	printf("\n jugadas disponibles %zu\n",juego->cantidad_movimientos);
-
 	if(juego->cantidad_movimientos > 0)
 		return false;
 
@@ -281,14 +280,14 @@ void juego_destruir(juego_t *juego)
 {
 	if(juego == NULL)return ;
 
+	pokemon_destruir_todo(juego->info_pokemones);
+
 	lista_destruir_todo(juego->lista_pokemones,NULL);
 	lista_destruir_todo(juego->jugadores[JUGADOR1].sus_pokemones,NULL);
 	lista_destruir_todo(juego->jugadores[JUGADOR2].sus_pokemones,NULL);
 
 	abb_destruir_todo(juego->jugadas_disponibles,NULL);
 	
-
-	pokemon_destruir_todo(juego->info_pokemones);
 
 	free(juego);
 }

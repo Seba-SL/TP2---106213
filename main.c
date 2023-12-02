@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "menu.h"
+#include "src/menu.h"
 
 #define MAX_NOMBRE 30
 #define MAX_NOMBRE_ARCHIVO 50
@@ -27,100 +27,32 @@
 
 */
 
+/*************************************************** Funciones auxiliares  ********************************************************************/
 
 void bienvenida();
+void mensaje_cargando();
 char* pedir_archivo();
 void mostrar_pokemon_disponibles(juego_t * juego);
 void jugador_seleccionar_pokemon(juego_t *juego, char * eleccionJugador1,char * eleccionJugador2,char * eleccionJugador3);
 jugada_t jugador_pedir_nombre_y_ataque();
 void dibujar_pkm(char * pkm_nombre);
 
+//jugada_t jugador_pedir_nombre_y_ataque(juego_t* juego ,JUGADOR jugador);
 
-int main(int argc, char *argv[])
+/*********************************************************************************************************************************************/
+
+
+int main(int argc,  char *argv[])
 {
-
+ 
 	juego_t *juego = juego_crear();
 
 	bienvenida();
 
-	//Pide al usuario un nombre de archivo de pokemones
-	char *archivo = pedir_archivo();
-
-	juego_cargar_pokemon(juego, archivo);
-
 	
-	//Crea un adversario que será utilizado como jugador 2
-	//adversario_t *adversario =
-	//	adversario_crear(juego_listar_pokemon(juego));
-
-	//Mostrar el listado de pokemones por consola para que el usuario sepa las opciones que tiene
-	mostrar_pokemon_disponibles(juego);
-
-	
-	//Pedirle al jugador por consola que ingrese los 3 nombres de pokemon que quiere utilizar
-	char *eleccionJugador1 = NULL, *eleccionJugador2 = NULL, *eleccionJugador3 = NULL;
-
-	jugador_seleccionar_pokemon(juego, eleccionJugador1,eleccionJugador2,eleccionJugador1);
-
-
-		//Seleccionar los pokemon de los jugadoresd 
-	juego_seleccionar_pokemon(juego, JUGADOR1, eleccionJugador1,eleccionJugador2, eleccionJugador3);
-
-
-	//Pedirle al jugador por consola que ingrese los 3 nombres de pokemon que quiere utilizar
-	char *eleccion_adversario1 = NULL, *eleccion_adversario2 = NULL, *eleccion_adversario3 = NULL;
-	jugador_seleccionar_pokemon(juego, eleccion_adversario1,eleccion_adversario2,eleccion_adversario3);
-
-
-		//Seleccionar los pokemon de los jugadoresd 
-	juego_seleccionar_pokemon(juego, JUGADOR2, eleccion_adversario1,eleccion_adversario2, eleccion_adversario3);
-
-
-		resultado_jugada_t resultado_ronda;
-
-
-		resultado_ronda.jugador1 = ATAQUE_REGULAR;
-		resultado_ronda.jugador2 = ATAQUE_REGULAR;
-
-
-
-	while( !juego_finalizado(juego))
-	{
-	
-		//Pide al jugador que ingrese por consola el pokemon y ataque para la siguiente ronda
-		jugada_t jugada_jugador = jugador_pedir_nombre_y_ataque();
-
-		//Pide al adversario que informe el pokemon y ataque para la siguiente ronda
-		jugada_t jugada_adversario = jugador_pedir_nombre_y_ataque();
-
-		//jugar la ronda y después comprobar que esté todo ok, si no, volver a pedir la jugada del jugador
-		resultado_ronda = juego_jugar_turno(juego, jugada_jugador, jugada_adversario);
-
-
-		//Si se pudo jugar el turno, le informo al adversario la jugada realizada por el jugador
-		//adversario_informar_jugada(adversario, jugada_jugador);
-
-		 printf("\nRonda:P1 %d P2 %d \n",juego_obtener_puntaje(juego,0),juego_obtener_puntaje(juego,1));
-	}
-
-	printf("r 1 %d , r2 %d ",resultado_ronda.jugador1 ,resultado_ronda.jugador2);
-
-
-	free(eleccionJugador1);
-	free(eleccionJugador2);
-	free(eleccionJugador3);
 	juego_destruir(juego);
 }
 
-jugada_t jugador_pedir_nombre_y_ataque()
-{
-	jugada_t nueva;
-
-	strcpy(nueva.pokemon,"Pikachu");
-	strcpy(nueva.ataque,"Latigo");
-
-	return nueva;
-}
 
 char*  pedir_archivo()
 {
@@ -131,7 +63,7 @@ char*  pedir_archivo()
 	
 	fscanf(stdin,"%s",nombre_archivo);
 
-	printf("\n \t\t        Cargando cartucho.....\n\n");
+	mensaje_cargando();
 
 	return nombre_archivo;
 }
@@ -227,9 +159,7 @@ bool imprimir_nombre_pkm(void* pokemon ,void* posicion)
 			return;
 		}
 
-		eleccionJugador1 = malloc(sizeof(char)*MAX_NOMBRE);
-		eleccionJugador2 = malloc(sizeof(char)*MAX_NOMBRE);
-		eleccionJugador3 = malloc(sizeof(char)*MAX_NOMBRE);
+		
 
 	
 		eleccionJugador1 = (char*)pokemon_nombre(lista_elemento_en_posicion(lista_pkm,(size_t)pkm1_p));
@@ -251,18 +181,18 @@ bool imprimir_nombre_pkm(void* pokemon ,void* posicion)
  void bienvenida()
 {
 
-	printf("                                  ,'\\ \n");
-	printf("    _.----.        ____         ,'  _\\   ___    ___     ____ \n");
-	printf("_,-'       `.     |    |  /`.   \\,-'    |   \\  /   |   |    \\  |`. \n");
-	printf("\\      __    \\    '-.  | /   `.  ___    |    \\/    |   '-.   \\ |  | \n");
-	printf(" \\.    \\ \\   |  __  |  |/    ,','_  `.  |          | __  |    \\|  | \n");
-	printf("  \\    \\/   /,' _`.|      ,' / / / /   |          ,' _`.|     |  | \n");
-	printf("   \\     ,-'/  /   \\    ,'   | \\/ / ,`.|         /  /   \\  |     | \n");
-	printf("    \\    \\ |   \\_/  |   `-.  \\    `'  /|  |    ||   \\_/  | |\\    | \n");
-	printf("     \\    \\ \\      /       `-.`.___,-' |  |\\  /| \\      /  | |   | \n");
-	printf("      \\    \\ `.__,'|  |`-._    `|      |__| \\/ |  `.__,'|  | |   | \n");
-	printf("       \\_.-'       |__|    `-._ |              '-.|     '-.| |   | \n");
-	printf("                               `'                            '-._|\n");
+	printf("                                           ,'\\ \n");
+	printf("             _.----.        ____         ,'  _\\   ___    ___     ____ \n");
+	printf("         _,-'       `.     |    |  /`.   \\,-'    |   \\  /   |   |    \\  |`. \n");
+	printf("         \\      __    \\    '-.  | /   `.  ___    |    \\/    |   '-.   \\ |  | \n");
+	printf("          \\.    \\ \\   |  __  |  |/    ,','_  `.  |          | __  |    \\|  | \n");
+	printf("           \\    \\/   /,' _`.|      ,' / / / /   |          ,' _`.|     |  | \n");
+	printf("            \\     ,-'/  /   \\    ,'   | \\/ / ,`.|         /  /   \\  |     | \n");
+	printf("             \\    \\ |   \\_/  |   `-.  \\    `'  /|  |    ||   \\_/  | |\\    | \n");
+	printf("              \\    \\ \\      /       `-.`.___,-' |  |\\  /| \\      /  | |   | \n");
+	printf("               \\    \\ `.__,'|  |`-._    `|      |__| \\/ |  `.__,'|  | |   | \n");
+	printf("                \\_.-'       |__|    `-._ |              '-.|     '-.| |   | \n");
+	printf("                                        `'                            '-._|\n");
 
 
 }
@@ -365,7 +295,7 @@ void dibujar_Togepi()
     printf("      j       `-._           `            /\n");
     printf("      |        _,'`\"--........+.         /\n");
     printf("      ,\"-.._,-'                 `.  .-._/\n");
-    printf("      '---'                       `+__,' mh\n");
+    printf("      '---'                       `+__,' \n");
 		puts("                   ");
 }
 
@@ -441,7 +371,7 @@ void dibujar_larvitar()
         printf(" .'   `--\"\"' _.-'    .-|     `.'          '._  .`  `.      / |  |.'|\n");
         printf(".  \\ .\"\\ _,-'        `.'..-.-'           /   `.-._   .     `.|./__.'\n");
         printf("|`.` | /\"               |.'             / _.'     `-.|\n");
-        printf("`_|.'`'                                `-' mh\n");
+        printf("`_|.'`'                                `-' \n");
         printf("\n");
 }
 
@@ -535,5 +465,19 @@ printf("             |___.---.   ,-'        .-':,-\"`\\,' .						\n");
 printf("                  L,.--\"'           '-' |  ,' `-.\\					\n");
 printf("                                        `.' 							\n");
 printf(" 				¿Que hay que prender fuego?								\n");
+
+}
+
+
+void mensaje_cargando()
+{
+  printf("\n");
+  printf("   ____ \n");  
+  printf("  / ___|__ _ _ __ __ _  __ _ _ __    __| | ___     ___ __ _ _ __| |_ _   _  ___| |__   ___       \n");
+  printf(" | |   / _` | '__/ _` |/ _` | '_ \\ / _` |/ _ \\   / __/ _` | '__| __| | | |/ __| '_ \\ / _ \\      \n");
+  printf(" | |__| (_| | | | (_| | (_| | | | | (_| | (_) | | (_| (_| | |  | |_| |_| | (__| | | | (_) | _ _    \n");
+  printf("  \\____\\__,_|_|  \\__, |\\__,_|_| |_|\\__,_|\\___/   \\___\\__,_|_|   \\__|\\__,_|\\___|_| |_|\\___(_|_|_)    \n");
+  printf("                  |___/         \n");                                                                 
+ printf("\n");
 
 }
