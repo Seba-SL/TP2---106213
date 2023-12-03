@@ -308,13 +308,15 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego)
 	resultado_ronda.jugador1 = ATAQUE_REGULAR;
 	resultado_ronda.jugador2 = ATAQUE_REGULAR;
 
+    
+    puts("aca hay competencia");
 
 	while( !juego_finalizado(juego))
 	{
 	
 		//Pide al jugador que ingrese por consola el pokemon y ataque para la siguiente ronda
 		jugada_t jugada_jugador;
-
+            //HARDCODEADO!!!!!!!!!!!!!!!!
          strcpy(jugada_jugador.pokemon,"Pikachu");
          strcpy(jugada_jugador.ataque,"Latigo");
 
@@ -332,16 +334,19 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego)
 		resultado_ronda = juego_jugar_turno(juego, jugada_jugador, jugada_adversario);
 
 
+        if(resultado_ronda.jugador1 == ATAQUE_ERROR && resultado_ronda.jugador2 == ATAQUE_ERROR)
+            puts("indique ataques validos");
+        
 		//Si se pudo jugar el turno, le informo al adversario la jugada realizada por el jugador
 		//adversario_informar_jugada(adversario, jugada_jugador);
 
-		 printf("\nRonda:P1 %d P2 %d \n",juego_obtener_puntaje(juego,0),juego_obtener_puntaje(juego,1));
+		 printf("\nRonda %zu:P1 %d P2 %d \n",ronda_n,juego_obtener_puntaje(juego,JUGADOR1),juego_obtener_puntaje(juego,JUGADOR2));
          ronda_n++;
 	}
+   
 
-    printf("Resultado ronda %zu:\nJugador 1 %d\nAdversario %d\n",ronda_n,resultado_ronda.jugador1,resultado_ronda.jugador2);
+    printf("\n\n\tResultado ronda Partida:\nJugador 1 %d\nAdversario %d\n", juego_obtener_puntaje(juego,JUGADOR1), juego_obtener_puntaje(juego,JUGADOR2));
 
-    puts("aca hay competencia");
     return TODO_OK;
 }
 
