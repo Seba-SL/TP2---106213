@@ -6,6 +6,8 @@
 #include "hash.h"
 #include <string.h>
 
+#define MAX_NOMBRE 30
+
 struct adversario 
 {	
 	hash_t *su_tablita_hash;
@@ -26,8 +28,11 @@ adversario_t *adversario_crear(lista_t *pokemon)
 
 	nuevo_adversario->su_tablita_hash = hash_crear(lista_tamanio(nuevo_adversario->sus_pokemones));
 	
-	if(nuevo_adversario->su_tablita_hash)
+	if(nuevo_adversario->su_tablita_hash == NULL)
+	{
+		free(nuevo_adversario);
 		return NULL;
+	}
 
 	return nuevo_adversario;
 }
@@ -36,13 +41,11 @@ bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,cha
 {
 	if(!adversario )
 		return NULL;
-
 	//nombre 3no guardar
-
 
 	lista_t * sus_pkms = adversario->sus_pokemones;
 
-	size_t pos1,pos2,pos3;
+	size_t pos1 = 0,pos2 = 0,pos3 = 0;
 
 	pos1 = (size_t)rand() % (lista_tamanio(sus_pkms)+1);
 

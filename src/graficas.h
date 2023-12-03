@@ -5,7 +5,8 @@
 #include <string.h>
 
 #define MSJ_PEDIR_ARCHIVO "Ingrese el archivo donde se encuentran sus pokemones"
-#define LIMPIAR_PANTALLA "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nn\n\n\n\n\n\n\n\n"
+#define MENSAJE_FIN_PARTIDA "Fin de la partida!"
+#define LIMPIAR_PANTALLA "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 #define ESPACIO_MEDIO "\n\n\n\n\n\n\n\n\n\n\n\n"
 
 //Mensajes  y dibujos
@@ -318,7 +319,7 @@ void mensaje_cargando()
   printf(" | |__| (_| | | | (_| | (_| | | | | (_| | (_) | | (_| (_| | |  | |_| |_| | (__| | | | (_) | _ _    \n");
   printf("  \\____\\__,_|_|  \\__, |\\__,_|_| |_|\\__,_|\\___/   \\___\\__,_|_|   \\__|\\__,_|\\___|_| |_|\\___(_|_|_)    \n");
   printf("                  |___/         \n");                                                                 
- printf("\n");
+  printf("\n");
 
 }
 
