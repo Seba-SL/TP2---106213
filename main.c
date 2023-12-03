@@ -32,7 +32,7 @@
 
 void bienvenida();
 void mensaje_cargando();
-char* pedir_archivo();
+bool pedir_archivo(void * archivo);
 void mostrar_pokemon_disponibles(juego_t * juego);
 void jugador_seleccionar_pokemon(juego_t *juego, char * eleccionJugador1,char * eleccionJugador2,char * eleccionJugador3);
 jugada_t jugador_pedir_nombre_y_ataque();
@@ -47,11 +47,14 @@ int main(int argc,  char *argv[])
 {
     menu_t *nueva_partida = crear_menu();
 	juego_t *juego = juego_crear();
+
+    char *archivo = NULL;
     
 	bienvenida();
 
+    menu_agregar_comando(nueva_partida,"c","Ingresar archivo",pedir_archivo,(void *)archivo);
 	//Pide al usuario un nombre de archivo de pokemones
-	char *archivo = pedir_archivo();
+
 
 	if(juego_cargar_pokemon(juego, archivo) != TODO_OK)
         return MENU_ERROR;
@@ -72,9 +75,11 @@ int main(int argc,  char *argv[])
 }
 
 
-char*  pedir_archivo()
+bool pedir_archivo(void* archivo)
 {
 	char *nombre_archivo = malloc(sizeof(char)*MAX_NOMBRE_ARCHIVO);
+
+    if(nombre_archivo == NULL)return false;
 
 	puts(MSJ_PEDIR_ARCHIVO);
 
@@ -84,7 +89,9 @@ char*  pedir_archivo()
 	mensaje_cargando();
 
     
-	return nombre_archivo;
+	archivo =  nombre_archivo;
+
+    return true;
 }
 
 

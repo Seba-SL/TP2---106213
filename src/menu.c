@@ -47,7 +47,7 @@ menu_t* crear_menu()
 
 }
 
-void menu_agregar_comando(menu_t *m,char* comando,char*descripcion , bool f(juego_t *),juego_t *contexto)
+void menu_agregar_comando(menu_t *m,char* comando,char*descripcion , bool f(void *),juego_t *contexto)
 {
     informacion_comando_t *info_comando = malloc( sizeof(informacion_comando_t) );
     

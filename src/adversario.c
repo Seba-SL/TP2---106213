@@ -4,6 +4,7 @@
 #include "pokemon.h"
 #include <stdlib.h>
 #include "hash.h"
+#include <string.h>
 
 struct adversario 
 {	
@@ -40,17 +41,17 @@ bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,cha
 
 	size_t pos1,pos2,pos3;
 
-	pos1 = rand() % (lista_tamanio(sus_pkms)+1);
+	pos1 = (size_t)rand() % (lista_tamanio(sus_pkms)+1);
 
-	pos2 = rand() % (lista_tamanio(sus_pkms)+1);
+	pos2 = (size_t)rand() % (lista_tamanio(sus_pkms)+1);
 
 	while(pos2 == pos1)
-		pos2 = rand() % (lista_tamanio(sus_pkms)+1);
+		pos2 = (size_t)rand() % (lista_tamanio(sus_pkms)+1);
 
-	pos2 = rand() % (lista_tamanio(sus_pkms)+1);
+	pos2 = ( size_t) rand() % (lista_tamanio(sus_pkms)+1);
 
 	while(pos2 == pos3 || pos3 == pos1)
-		pos3 = rand() % (lista_tamanio(sus_pkms)+1);
+		pos3 = (size_t)rand() % (lista_tamanio(sus_pkms)+1);
 
 	pokemon_t *pkm1 =  lista_elemento_en_posicion(sus_pkms,pos1);
 	

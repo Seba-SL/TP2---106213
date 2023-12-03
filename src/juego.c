@@ -224,12 +224,10 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 		return resultado;
 	}
 
-	
 	//saca los pokemones en sus mochilas , si es q existen
 	pokemon_t *pkm1  = lista_buscar_elemento(juego->jugadores[JUGADOR1].sus_pokemones,comparar_nombres,jugada_jugador1.pokemon);
 	pokemon_t *pkm2  = lista_buscar_elemento(juego->jugadores[JUGADOR2].sus_pokemones,comparar_nombres,jugada_jugador2.pokemon);
 
-	
 	
 	if(!pkm1 || !pkm2)
 		return resultado;
