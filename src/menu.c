@@ -2,35 +2,44 @@
 #include "menu.h"
 #include "hash.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #define CAPACIDAD_COMANDOS_INICIAL 3
-
- struct menu
-{
-    char *usuario;
-    hash_t *comandos;
-
-};
+#define MAX_CLAVE 10
+#define MENSAJE_PEDIR_USUARIO "Ingrese su nombre de usuario"
+#define MAX_NOMBRE 30
 
 
 
 struct info
 {
 	char *descripcion;
-    bool (*funcion)(juego_t *);
+    bool (*funcion)(void *);
 };
 
 typedef struct 
 {
     void *contexto;
-    void (*f)(char*descripcion ,  bool(*c)(juego_t*)   );
+    void (*f)(char*descripcion ,  bool(*c)(void*)   );
 
 }datos_iterador_t;
 
 
-
-menu_t* crear_menu()
+ struct menu
 {
+    void *aplicacion;
+    char usuario[MAX_NOMBRE];
+    hash_t *comandos;
+    char* archivo_auxiliar;
+
+};
+
+menu_t* crear_menu(void *aplicacion)
+{
+    if(aplicacion == NULL)
+        return NULL;
+
     menu_t *menu_nuevo = calloc( 1 , sizeof(menu_t));
         if(menu_nuevo == NULL)return NULL;
     
@@ -42,32 +51,73 @@ menu_t* crear_menu()
                 return NULL;
             }   
 
+    menu_nuevo->aplicacion = aplicacion;
+
+    puts(MENSAJE_PEDIR_USUARIO);
+
+    fgets(menu_nuevo->usuario,MAX_NOMBRE,stdin);
+
+    menu_nuevo->usuario[strlen(menu_nuevo->usuario)-1] = 0;
 
     return menu_nuevo;
 
 }
 
-void menu_agregar_comando(menu_t *m,char* comando,char*descripcion , bool f(void *),juego_t *contexto)
+     
+MENU_RESULTADO menu_agregar_comando(menu_t *m,char* comando,char*descripcion , bool f(void *))
 {
+    if(!m || !comando || !f )
+        return MENU_ERROR;
+
+    char clave[MAX_CLAVE] ;
+
+    strcpy(clave,comando);
+
+   
+
     informacion_comando_t *info_comando = malloc( sizeof(informacion_comando_t) );
     
     info_comando->descripcion = descripcion;
     info_comando->funcion = f;
 
-    hash_insertar(m->comandos,comando,info_comando,NULL);
+    m->comandos =  hash_insertar(m->comandos,clave,info_comando,NULL);
+
+    if(   m->comandos  == NULL   || hash_cantidad(m->comandos) == 0 || !hash_contiene(m->comandos, clave) )
+    {
+        return MENU_ERROR;
+    }
+
+    
+
+  
+    return MENU_OK;
 }
 
+//bool pedir_archivo(void* archivo)                                    
 MENU_RESULTADO menu_ejecutar_comando(menu_t *menu,char*comando,void *contexto)
 {
-    informacion_comando_t *info_comando = hash_obtener(menu->comandos,comando);
+
+    
+
+    informacion_comando_t *info_comando = hash_obtener(menu->comandos,comando );
 
     if(info_comando == NULL)
+    {
         return MENU_INEXISTENTE;
+    } 
 
-
-    if(info_comando->funcion(contexto))
-        return MENU_OK;
     
+    if(info_comando->funcion(contexto))
+    {
+        return MENU_OK;
+    }
+    
+
+    if(!info_comando->funcion(contexto))
+    {
+        return MENU_SALIR;
+    }
+
     return MENU_ERROR;
 }
 
@@ -83,7 +133,7 @@ bool funcion (const char *clave, void *valor, void *aux)
     return true;
 }
 
-void menu_con_cada_comando( menu_t *m   , void (*f)(char*descripcion ,  bool(*c)(juego_t*)   ), void *contexto  )
+void menu_con_cada_comando( menu_t *m   , void (*f)(char*descripcion ,  bool(*c)(void*)   ), void *contexto  )
 {
     datos_iterador_t datos_iterad ;
 
@@ -93,10 +143,66 @@ void menu_con_cada_comando( menu_t *m   , void (*f)(char*descripcion ,  bool(*c)
     hash_con_cada_clave(m->comandos,funcion,&datos_iterad);
 }
 
-
-
-void menu_destruir(menu_t *m)
+bool mostrar_comandos(const char *clave, void *valor, void *aux)
 {
-    hash_destruir_todo(m->comandos,NULL);
+
+    informacion_comando_t  *info_comando = valor;
+
+    printf("%s %s \t",(char*)clave,(char*)info_comando->descripcion);
+    return true;
+}
+
+void mostrar_menu(menu_t *m)    
+{
+
+    if(!m || !m->comandos )
+       {
+         return;
+       }
+    
+
+    hash_con_cada_clave(m->comandos,mostrar_comandos,m);
+    printf("\n\n");
+
+}
+
+void * entregar_app(menu_t *menu)
+{
+    if(menu == NULL || menu->aplicacion == NULL)
+        return NULL;
+
+    return menu->aplicacion;
+}
+
+MENU_RESULTADO asignar_archivo_menu(menu_t *m,char* archivo)
+{   
+    if(!m)
+        {
+            return MENU_ERROR;
+        }
+
+    m->archivo_auxiliar = archivo;
+
+    return MENU_OK;
+}
+
+char* entregar_nombre_archivo(menu_t *m)
+{   
+    if(!m)
+        return NULL;
+
+   return m->archivo_auxiliar;
+}
+char *dar_nombre_usuario(menu_t *m)
+{
+    if(m == NULL)
+        return NULL;
+
+    return m->usuario;
+}
+void menu_destruir(menu_t *m)
+{   
+    free(m->archivo_auxiliar);
+    hash_destruir_todo(m->comandos,free);
     free(m);
 }

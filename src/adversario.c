@@ -37,6 +37,9 @@ bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,cha
 	if(!adversario )
 		return NULL;
 
+	//nombre 3no guardar
+
+
 	lista_t * sus_pkms = adversario->sus_pokemones;
 
 	size_t pos1,pos2,pos3;
@@ -71,6 +74,8 @@ bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,cha
 
 bool adversario_pokemon_seleccionado(adversario_t *adversario, char *nombre1,char *nombre2, char *nombre3)
 {
+
+	//me guardo nombre3
 	return true;
 }
 
