@@ -14,6 +14,7 @@
 
 #define MSJ_PEDIR_ARCHIVO "Ingrese el archivo donde se encuentran sus pokemones"
 
+
 /**
 * Este main debe ser modificado para que el usuario pueda jugar el juego. Las
 * instrucciones existentes son solamente a modo ilustrativo del funcionamiento
@@ -44,12 +45,29 @@ void dibujar_pkm(char * pkm_nombre);
 
 int main(int argc,  char *argv[])
 {
- 
+    menu_t *nueva_partida = crear_menu();
 	juego_t *juego = juego_crear();
-
+    
 	bienvenida();
 
+	//Pide al usuario un nombre de archivo de pokemones
+	char *archivo = pedir_archivo();
+
+	if(juego_cargar_pokemon(juego, archivo) != TODO_OK)
+        return MENU_ERROR;
+
 	
+	//Crea un adversario que será utilizado como jugador 2
+	//adversario_t *adversario =
+	//	adversario_crear(juego_listar_pokemon(juego));
+
+	//Mostrar el listado de pokemones por consola para que el usuario sepa las opciones que tiene
+	mostrar_pokemon_disponibles(juego);
+
+    
+
+	free(archivo);
+    menu_destruir(nueva_partida);
 	juego_destruir(juego);
 }
 
@@ -65,9 +83,9 @@ char*  pedir_archivo()
 
 	mensaje_cargando();
 
+    
 	return nombre_archivo;
 }
-
 
 
 bool imprimir_nombre_pkm(void* pokemon ,void* posicion)
@@ -192,7 +210,7 @@ bool imprimir_nombre_pkm(void* pokemon ,void* posicion)
 	printf("              \\    \\ \\      /       `-.`.___,-' |  |\\  /| \\      /  | |   | \n");
 	printf("               \\    \\ `.__,'|  |`-._    `|      |__| \\/ |  `.__,'|  | |   | \n");
 	printf("                \\_.-'       |__|    `-._ |              '-.|     '-.| |   | \n");
-	printf("                                        `'                            '-._|\n");
+	printf("                                        `'                            '-._|\n\n");
 
 
 }

@@ -28,7 +28,7 @@ typedef struct
 }datos_iterador_t;
 
 
-/*
+
 menu_t* crear_menu()
 {
     menu_t *menu_nuevo = calloc( 1 , sizeof(menu_t));
@@ -83,7 +83,7 @@ bool funcion (const char *clave, void *valor, void *aux)
     return true;
 }
 
-void menu_con_cada_comando( menu_t *m   , void (*f)(char*descripcion ,  bool(*c)(void*)   ), void *contexto  )
+void menu_con_cada_comando( menu_t *m   , void (*f)(char*descripcion ,  bool(*c)(juego_t*)   ), void *contexto  )
 {
     datos_iterador_t datos_iterad ;
 
@@ -94,7 +94,7 @@ void menu_con_cada_comando( menu_t *m   , void (*f)(char*descripcion ,  bool(*c)
 }
 
 
-*/
+
 void menu_destruir(menu_t *m)
 {
     hash_destruir_todo(m->comandos,NULL);
