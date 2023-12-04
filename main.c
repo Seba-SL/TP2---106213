@@ -14,7 +14,8 @@
 #define MAX_NOMBRE_ARCHIVO 50
 #define MAX_LINEA 20
 #define CANTIDAD_ATAQUES 3
-
+#define TIEMPO_DELAY 10000000
+#define TIEMPO_DELAY2 1500000
 
 /**
 * Este main debe ser modificado para que el usuario pueda jugar el juego. Las
@@ -29,14 +30,15 @@
 
 */
 
-typedef struct e
+typedef struct 
 {
     juego_t *juego;
+
     char * eleccionJugador1;
     char * eleccionJugador2;
     char * eleccionJugador3;
     
-    jugada_t jugada_actual;
+    jugada_t jugada_actual;  //pokemon[20] y ataque[]
    
 }elecciones_t;
 
@@ -56,10 +58,9 @@ bool informacion_pokemones(void *menu);
 void jugador_seleccionar_pokemon( elecciones_t * elecciones);
 jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3);
 JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario);
-
 JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego, elecciones_t * jugador1 ,adversario_t*rival);
-
-
+void delay(int d);
+void vuelve_a_pedir(int *pkm1_p , char * buffer);
 
 /*********************************************************************************************************************************************/
 
@@ -68,9 +69,13 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego, elecciones_t * jugador1 ,a
 int main(int argc,  char *argv[])
 {
     juego_t *juego = juego_crear();
+
+    puts(LIMPIAR_PANTALLA);
+
     menu_t *nueva_partida = crear_menu((void *) juego);
 	   
     MENU_RESULTADO estado = MENU_OK;
+
 
     char *linea = malloc(sizeof(char)*MAX_LINEA);
 
@@ -87,12 +92,12 @@ int main(int argc,  char *argv[])
     puts(LIMPIAR_PANTALLA);
     bienvenida();
 
-    printf("Hola entrenador %s bienvenido al mundo Pokemon!\n",dar_nombre_usuario(nueva_partida));
+   
 
-    for(int i = 0; i < 10000000 ; i++)
-    {
-       
-    }
+    printf("Hola entrenador %s bienvenido/a al mundo Pokemon!\n",dar_nombre_usuario(nueva_partida));
+
+
+    delay(TIEMPO_DELAY);
 
     puts(LIMPIAR_PANTALLA);
 
@@ -112,18 +117,21 @@ int main(int argc,  char *argv[])
         {
         case MENU_INEXISTENTE:
             
+            puts(LIMPIAR_PANTALLA);
             bienvenida();
+            mostrar_menu(nueva_partida);
             printf("\nComando inexistente , %s re ingrese un comando valido\n\n",dar_nombre_usuario(nueva_partida));
             break;
         
         default:
-              
+           
             bienvenida();
+            mostrar_menu(nueva_partida);
             puts("Ingrese comandos a continuacion");
             break;
         }
       
-        mostrar_menu(nueva_partida);
+       
         fgets(linea,MAX_LINEA,stdin);
         puts(LIMPIAR_PANTALLA);
         linea[strlen(linea)-1] = 0;
@@ -150,11 +158,6 @@ int main(int argc,  char *argv[])
 }
 
 
-bool salir_juego(void *menu ) 
-{
-    return false;
-}
-
 
 bool pedir_archivo(void* menu)
 {
@@ -164,16 +167,29 @@ bool pedir_archivo(void* menu)
      {
           return false;
      }
-    
+
+   
     bienvenida();
 
 	char *nombre_archivo = malloc(sizeof(char)*MAX_NOMBRE_ARCHIVO);
 
     if(nombre_archivo == NULL)
         {
+            
             carga_invalida();
             return false;
         }
+    
+    lista_t *l_pkm = juego_listar_pokemon(entregar_app(menu));
+
+    int tam =  (int)lista_tamanio(l_pkm);
+
+    for(int i=0; i < tam ; i++)
+    {
+       lista_quitar(l_pkm);
+
+    }
+
 
 	puts(MSJ_PEDIR_ARCHIVO);
 
@@ -254,6 +270,7 @@ bool informacion_pokemones(void *menu)
 
     if(!entregar_nombre_archivo(menuu) || lista_vacia(juego_listar_pokemon(juego)))
     {
+        puts(LIMPIAR_PANTALLA);
         puts("No hay pokemons cargados en el juego");
         return true;
     }
@@ -281,7 +298,7 @@ bool informacion_pokemones(void *menu)
         return false;
     }
 
-   
+
 
 	lista_t *lista_pkm = juego_listar_pokemon((juego_t*)entregar_app(menu));
 
@@ -293,6 +310,8 @@ bool informacion_pokemones(void *menu)
         return true;
     }
 
+    bienvenida();
+
     size_t *posiciones = calloc(1,sizeof(size_t));
     int pkm_eleccion = 0;
     
@@ -301,7 +320,7 @@ bool informacion_pokemones(void *menu)
     *posiciones = 0;
     lista_con_cada_elemento(lista_pkm,imprimir_nombre_pkm,posiciones);
 
-	printf("\n\n\n \t\t Cantidad de pokemons disponibles : %zu\n",lista_tamanio(lista_pkm));
+	printf("\n\t\t Cantidad de pokemons disponibles : %zu\n",lista_tamanio(lista_pkm));
     
     puts("ingrese la posicion del que quieres observar mas de cerca, para sali ingrese -1");
 
@@ -309,18 +328,24 @@ bool informacion_pokemones(void *menu)
     fgets(buffer,MAX_LINEA,stdin);
     pkm_eleccion = atoi(buffer);
 
-    while(pkm_eleccion > lista_tamanio(lista_pkm) && pkm_eleccion < -1)
+    while(pkm_eleccion >= lista_tamanio(lista_pkm)  &&  pkm_eleccion != -1)
     {
         puts("ingrese pokemon valido");     
+
         fgets(buffer,MAX_LINEA,stdin);
         pkm_eleccion = atoi(buffer);
     }
 
-    pokemon_t * a_observar_pkm = lista_elemento_en_posicion(lista_pkm,(size_t)pkm_eleccion);
+    if(pkm_eleccion != -1)
+    {
+        pokemon_t * a_observar_pkm = lista_elemento_en_posicion(lista_pkm,(size_t)pkm_eleccion);
 
-    dibujar_pkm((char*)pokemon_nombre(a_observar_pkm));
+        dibujar_pkm((char*)pokemon_nombre(a_observar_pkm));
 
-    con_cada_ataque(a_observar_pkm,mostrar_ataques,NULL);
+        con_cada_ataque(a_observar_pkm,mostrar_ataques,NULL);
+
+       
+    }
 	
     }while(pkm_eleccion != -1);
 
@@ -341,13 +366,15 @@ bool jugar(void* menu)
        return true;
     }
 
+    bienvenida();
+    
     JUEGO_ESTADO estado = TODO_OK;
 
     juego_t * juego = entregar_app(menu);
    
     elecciones_t *jugador1_e = calloc(1,sizeof(elecciones_t));
    
-    adversario_t *rival = adversario_crear(juego_listar_pokemon((juego_t*)juego));
+    adversario_t *rival = adversario_crear(juego_listar_pokemon((juego_t*)juego)); //TODO_OK = 0 , 
     
     
     jugador1_e->juego = juego;
@@ -366,11 +393,17 @@ bool jugar(void* menu)
 
 JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario)
 {
+    int * posiciones = calloc(1,sizeof(int));
 
     printf("\n\nTurno de elegir pokemones del entrenador %s\n\n\n",dar_nombre_usuario(menu));
+  
+    //muestro los pokemones disponibles
+    lista_con_cada_elemento(juego_listar_pokemon(juego),imprimir_nombre_pkm,posiciones);
 
+    //le pido al usuario que elija 3 y los guardo en los campos de jugador1
     jugador_seleccionar_pokemon(jugador1);
     
+    //aca le asigno los dos primeros y el tercero va a jugador 2 
     JUEGO_ESTADO estado = juego_seleccionar_pokemon(juego,JUGADOR1,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
 
     if(estado != TODO_OK)
@@ -378,7 +411,7 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
        
          adversario_destruir(adversario); 
          free(jugador1); 
-         
+         free(posiciones);
          return false;
        }
      
@@ -389,17 +422,28 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
 	eleccion_adversario1 = calloc(1,sizeof(char)*MAX_NOMBRE);
 	eleccion_adversario2 = calloc(1,sizeof(char)*MAX_NOMBRE);
 	eleccion_adversario3 = calloc(1,sizeof(char)*MAX_NOMBRE);
-    
-    estado = adversario_seleccionar_pokemon(adversario,&eleccion_adversario1,&eleccion_adversario2,&eleccion_adversario3);
 
-    estado = juego_seleccionar_pokemon(juego, JUGADOR2, eleccion_adversario1,eleccion_adversario2, eleccion_adversario3);
+
+    //Esto lo completa de forma automatica
+     adversario_seleccionar_pokemon(adversario,&eleccion_adversario1,&eleccion_adversario2,&eleccion_adversario3);
+
+    //Aca le guarda en juego_t  e intercambia 
+   estado = juego_seleccionar_pokemon(juego,JUGADOR2,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
+
+    //Aca le guardo al adversario el tercero q le ortorga el primero
+    adversario_pokemon_seleccionado(adversario,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
+
+
+    strcpy(jugador1->eleccionJugador3, eleccion_adversario3);
 
     if(estado != TODO_OK)
     { 
-      
+        free(posiciones);
         return false;
     }
 
+   
+    free(posiciones);
     return estado;
 }
 
@@ -433,14 +477,15 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1
 
 	while( !juego_finalizado(juego) && ronda_n < 9)
 	{
+        //Pide al jugador que ingrese por consola el pokemon y ataque para la siguiente ronda
         jugada_t juagada1 = elige_jugada_j1(menu,juego,elecciones_j1->eleccionJugador1,elecciones_j1->eleccionJugador2,elecciones_j1->eleccionJugador3);
 
-		//Pide al jugador que ingrese por consola el pokemon y ataque para la siguiente ronda
 	
-
 		//Pide al adversario que informe el pokemon y ataque para la siguiente ronda
 		jugada_t jugada_adversario = adversario_proxima_jugada(rival);
 
+
+        
         printf("\nEl adversario eligio %s y su ataque %s\n",jugada_adversario.pokemon,jugada_adversario.ataque);
         //jugador_pedir_nombre_y_ataque( juego,JUGADOR2 );
 
@@ -506,7 +551,6 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
     pokemon_t *pkm_elegido = lista_buscar_elemento(pkm_disponibles,comparar_nombres_en_juego,jugada_actual.pokemon);
     
   
-
     con_cada_ataque(pkm_elegido,mostrar_ataques,NULL);
     printf("\nElegi que ataque usara!\n");
 
@@ -528,8 +572,6 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
     return jugada_actual;
     
     
-
-        //jugador_pedir_nombre_y_ataque( juego ,JUGADOR1);
 }
 
 
@@ -539,7 +581,7 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
     
 	lista_t *lista_pkm = juego_listar_pokemon(elecciones->juego);
 
-	puts("Selecciona tres Pokemons!");
+	puts("\nSelecciona tres Pokemons!");
 
 	int pkm1_p = -1,pkm2_p = -1 , pkm3_p = -1;
 
@@ -548,53 +590,40 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
     char buffer[MAX_LINEA];
 	
 		puts("Selecciona el primero!");
-		//fscanf(stdin,"%d",	&pkm1_p);
+		
         fgets(buffer,MAX_LINEA,stdin);
 
         pkm1_p = atoi(buffer);
        
-			while(pkm1_p < 0)
-			{
-			
-				puts("Selecciona una posicion valida!");
-				fgets(buffer,MAX_LINEA,stdin);
-                pkm1_p = atoi(buffer);
+		while(pkm1_p < 0)
+		{
+		
+			 vuelve_a_pedir(&pkm1_p,buffer);
 				
-			}
-
-	
+		}
 
 		puts("Selecciona el segundo!");
 		fgets(buffer,MAX_LINEA,stdin);
         pkm2_p = atoi(buffer);
 		
 				
-			while(pkm2_p < 0 || pkm2_p == pkm1_p)
-			{
-				puts("Selecciona una posicion valida!");
-				fgets(buffer,MAX_LINEA,stdin);
-                 pkm2_p = atoi(buffer);
-				
-				
-			}
+		while(pkm2_p < 0 || pkm2_p == pkm1_p)
+		{
+			 vuelve_a_pedir(&pkm2_p,buffer);				
+		}
 
 
 		puts("Selecciona el tercero!");
 		fgets(buffer,MAX_LINEA,stdin);
         pkm3_p = atoi(buffer);
 		
-		
 				
 		while(pkm3_p < 0 || pkm3_p == pkm1_p ||  pkm3_p == pkm2_p )
 		{
-			puts("Selecciona una posicion valida!");
-			fgets(buffer,MAX_LINEA,stdin);
-            pkm3_p = atoi(buffer);
-		
 			
+            vuelve_a_pedir(&pkm3_p,buffer);
 			
 		}
-
        
 
 		if(pkm1_p > tope || pkm2_p > tope || pkm1_p > tope)
@@ -610,14 +639,43 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
 		elecciones->eleccionJugador1 = (char*)pokemon_nombre(lista_elemento_en_posicion(lista_pkm,(size_t)pkm1_p));
 
 		dibujar_pkm(elecciones->eleccionJugador1);
+        delay(TIEMPO_DELAY2);
 
 		elecciones->eleccionJugador2 = (char*)pokemon_nombre(lista_elemento_en_posicion(lista_pkm,(size_t)pkm2_p));
 
 		dibujar_pkm(elecciones->eleccionJugador2);
+        delay(TIEMPO_DELAY2);
 
 		elecciones->eleccionJugador3 = (char*)pokemon_nombre(lista_elemento_en_posicion(lista_pkm,(size_t)pkm3_p));
 
 		dibujar_pkm(elecciones->eleccionJugador3);
+        puts("Fulbo?");
+        delay(TIEMPO_DELAY2);
 
 			
  }
+
+void vuelve_a_pedir(int *pkm1_p , char * buffer)
+{
+    puts("Selecciona una posicion valida!");
+	fgets(buffer,MAX_LINEA,stdin);
+    *pkm1_p = atoi(buffer);
+}
+
+
+
+
+//SIMPLES
+
+void delay(int d)
+{
+      for(int i = 0; i < d ; i++)
+    {
+       
+    }
+}
+
+bool salir_juego(void *menu ) 
+{
+    return false;
+}
