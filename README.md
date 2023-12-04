@@ -4,23 +4,23 @@
 
 # TP2
 
-## Repositorio de (Nombre Apellido) - (Padrón) - (Mail)
+## Repositorio de Sebastian Nahuel Lazo - 106213 - slazo@fi.uba.ar
 
 - Para compilar:
 
 ```bash
-línea de compilación
+make main
 ```
 
 - Para ejecutar:
 
 ```bash
-línea de ejecución
+./main
 ```
 
 - Para ejecutar con valgrind:
 ```bash
-línea con valgrind
+make
 ```
 ---
 ##  Funcionamiento
