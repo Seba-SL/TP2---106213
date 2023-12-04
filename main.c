@@ -499,6 +499,8 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1
         //jugador_pedir_nombre_y_ataque( juego,JUGADOR2 );
 
 		//jugar la ronda y después comprobar que esté todo ok, si no, volver a pedir la jugada del jugador
+
+        printf("Estoy enviando a juego_jugar_turno \nesto essto deberia ser un pokemon %s \nesto un ataque %s\n",juagada1.pokemon,juagada1.ataque);
 		resultado_ronda = juego_jugar_turno(juego, juagada1, jugada_adversario);
 
 
@@ -540,6 +542,7 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
         pkm_eleccion = atoi(buffer);
     }
 
+    
        
     switch (pkm_eleccion)
     {
@@ -577,7 +580,7 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
     }
 
     
-    strcpy(jugada_actual.pokemon,ataque_elegido->nombre);
+    strcpy(jugada_actual.ataque,ataque_elegido->nombre);
 
     puts(LIMPIAR_PANTALLA);
 

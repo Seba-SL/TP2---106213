@@ -224,6 +224,10 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 	resultado.jugador2 = ATAQUE_ERROR;
 
 
+	printf("\nEn juego.c llego esto j1 %s y %s\n",jugada_jugador1.pokemon , jugada_jugador1.ataque);
+	
+	printf("En juego.c llego esto j2 %s y %s\n",jugada_jugador2.pokemon , jugada_jugador2.ataque);
+
 	if(!juego)
 		return resultado;
 
@@ -261,6 +265,10 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 
 	asignar_puntaje( &juego->jugadores[JUGADOR2].puntaje , atk2,  resultado.jugador2 );
 	
+
+	printf("puntaje q se suma en juego j1 : %d",juego->jugadores[JUGADOR2].puntaje);
+	
+	printf("puntaje q se suma en juego j2: %d",juego->jugadores[JUGADOR1].puntaje);
 
 	
 	juego->cantidad_movimientos--;
