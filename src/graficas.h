@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MSJ_PEDIR_ARCHIVO "Ingrese el archivo donde se encuentran sus pokemones"
+#define MSJ_PEDIR_ARCHIVO "Ingrese el archivo donde se encuentran sus pokemones\n"
+#define MSJ_NO_HAY_POKEMONES_CARGADOS "No hay Pokemones cargados\n"
 #define MENSAJE_FIN_PARTIDA "Fin de la partida!"
+#define MENSAJE_ERROR "Error en ejecucion"
 #define LIMPIAR_PANTALLA "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 #define ESPACIO_MEDIO "\n\n\n\n\n\n\n\n\n\n\n\n"
 
@@ -326,7 +328,7 @@ void mensaje_cargando()
  void mensaje_cargado_con_exito()
  {
     puts(LIMPIAR_PANTALLA);
-    bienvenida();
+   
     printf("  _____           _              _                        _ _     _       _ \n");
     printf(" / ____|         | |            | |                      | (_)   | |     | |\n");
     printf("| |     __ _ _ __| |_ _   _  ___| |__   ___   __   ____ _| |_  __| | ___ | |\n");
@@ -339,7 +341,7 @@ void mensaje_cargando()
  void carga_invalida()
  {
     puts(LIMPIAR_PANTALLA);
-    bienvenida();
+   
     printf("  _____           _              _             _                 _ _     _       _ \n");
     printf(" / ____|         | |            | |           (_)               | (_)   | |     | |\n");
     printf("| |     __ _ _ __| |_ _   _  ___| |__   ___    _ _ ____   ____ _| |_  __| | ___ | |\n");

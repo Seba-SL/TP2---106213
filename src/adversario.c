@@ -70,7 +70,7 @@ typedef struct
 
 void listar_jugada(const struct ataque *ataque, void *aux_)
  {
-	para_listar_jugada_t *aux_ = aux_;
+	/*para_listar_jugada_t *aux_ = aux_;
 
 	jugada_t *jugada = jugada_crear(ataque->nombre, ataque->poder);
 	
@@ -84,16 +84,16 @@ void listar_jugada(const struct ataque *ataque, void *aux_)
 	{
 		destructor_jugadas(jugada);
 		
-	}
+	}*/
 }
 
 bool jugada_a_lista(pokemon_t *pokemon, lista_t *lista) {
 
-	para_listar_jugada_t aux = {.nombre_pkm = pokemon_nombre(pokemon), .lista = lista, .exito = true};
+	/*para_listar_jugada_t aux = {.nombre_pkm = pokemon_nombre(pokemon), .lista = lista, .exito = true};
 
-	con_cada_ataque(pokemon, listar_jugada, &aux);
+	con_cada_ataque(pokemon, listar_jugada, &aux);*/
 
-	return aux.exito;
+	return true;
 }
 
 bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,
@@ -133,10 +133,10 @@ bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,
 }
 
 int comparar_con_nombre(void *pokemon, void *nombre) {
-	pokemon_t *pokemon_ = pokemon;
+	/*pokemon_t *pokemon_ = pokemon;
 	char *nombre_ = nombre;
-
-	return strcmp(pokemon_nombre(pokemon_), nombre);
+*/
+	return 2;
 }
 
 bool adversario_pokemon_seleccionado(adversario_t *adversario, char *nombre1,
@@ -172,7 +172,7 @@ bool adversario_pokemon_seleccionado(adversario_t *adversario, char *nombre1,
 jugada_t adversario_proxima_jugada(adversario_t *adversario)
 {
 	jugada_t prox_jugada = { .ataque = "", .pokemon = "" };
-
+/*
 	if(adversario == NULL)
 		return prox_jugada;
 
@@ -185,7 +185,7 @@ jugada_t adversario_proxima_jugada(adversario_t *adversario)
 	prox_jugada = *aux;
 
 	destructor_jugadas(aux);
-
+*/
 	return prox_jugada; 
 }
 
@@ -195,10 +195,9 @@ void adversario_informar_jugada(adversario_t *a, jugada_t j)
 
 void adversario_destruir(adversario_t *adversario)
 {
-	lista_destruir(adversario->mochila_adversario);
-	lista_destruir(adversario->jugadas_disponibles, destructor_jugadas);
-
-	lista_destruir(adversario->mochila_jugador);
+	lista_destruir_todo(adversario->mochila_adversario,NULL);
+	lista_destruir_todo(adversario->jugadas_disponibles,NULL);
+	lista_destruir_todo(adversario->mochila_jugador,NULL);
 
 	free(adversario);
 }

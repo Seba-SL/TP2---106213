@@ -84,35 +84,50 @@ int main(int argc,  char *argv[])
 
     estado = menu_agregar_comando(nueva_partida,"i","Ver informacion de los pokemones",informacion_pokemones);
 
+    puts(LIMPIAR_PANTALLA);
     bienvenida();
 
     printf("Hola entrenador %s bienvenido al mundo Pokemon!\n",dar_nombre_usuario(nueva_partida));
 
+    for(int i = 0; i < 10000000 ; i++)
+    {
+       
+    }
+
+    puts(LIMPIAR_PANTALLA);
+
+
     if(estado != MENU_OK)
     {
-        puts("Error al ingresar comando");
+        puts(MENSAJE_ERROR);
         return ERROR_GENERAL;
     }
 
    
     while(!juego_finalizado(juego) && estado != MENU_SALIR)
     {
+       
+
         switch (estado)
         {
         case MENU_INEXISTENTE:
-            puts(LIMPIAR_PANTALLA);
+            
             bienvenida();
             printf("\nComando inexistente , %s re ingrese un comando valido\n\n",dar_nombre_usuario(nueva_partida));
             break;
         
         default:
-             puts("Ingrese comandos a continuacion");
+              
+            bienvenida();
+            puts("Ingrese comandos a continuacion");
             break;
         }
       
         mostrar_menu(nueva_partida);
         fgets(linea,MAX_LINEA,stdin);
+        puts(LIMPIAR_PANTALLA);
         linea[strlen(linea)-1] = 0;
+        puts(LIMPIAR_PANTALLA);
 
         estado =  menu_ejecutar_comando(nueva_partida,linea,nueva_partida);
 
@@ -149,11 +164,14 @@ bool pedir_archivo(void* menu)
      {
           return false;
      }
+    
+    bienvenida();
 
 	char *nombre_archivo = malloc(sizeof(char)*MAX_NOMBRE_ARCHIVO);
 
     if(nombre_archivo == NULL)
         {
+            carga_invalida();
             return false;
         }
 
@@ -174,15 +192,17 @@ bool pedir_archivo(void* menu)
     if(estado == TODO_OK)
     {
         mensaje_cargado_con_exito();
+        
     }
     
     if(estado == ERROR_GENERAL)
     {   
+        
         carga_invalida();
         return true;
     }
 
-    return !estado;
+    return true;
 }
 
 
@@ -255,20 +275,56 @@ bool informacion_pokemones(void *menu)
 
  bool mostrar_pokemon_disponibles(void * menu)
  {
-	if(menu == NULL)
+	if(menu == NULL )
+    {
+        puts(MENSAJE_ERROR);
         return false;
+    }
 
+   
 
 	lista_t *lista_pkm = juego_listar_pokemon((juego_t*)entregar_app(menu));
 
-	size_t *posiciones = calloc(1,sizeof(size_t));
+	
 
+     if(entregar_nombre_archivo(menu) == NULL || lista_vacia(lista_pkm))
+    {
+        puts(MSJ_NO_HAY_POKEMONES_CARGADOS);
+        return true;
+    }
 
-	lista_con_cada_elemento(lista_pkm,imprimir_nombre_pkm,posiciones);
+    size_t *posiciones = calloc(1,sizeof(size_t));
+    int pkm_eleccion = 0;
+    
+    do{
+	
+    *posiciones = 0;
+    lista_con_cada_elemento(lista_pkm,imprimir_nombre_pkm,posiciones);
 
 	printf("\n\n\n \t\t Cantidad de pokemons disponibles : %zu\n",lista_tamanio(lista_pkm));
+    
+    puts("ingrese la posicion del que quieres observar mas de cerca, para sali ingrese -1");
 
+    char buffer[MAX_LINEA];
+    fgets(buffer,MAX_LINEA,stdin);
+    pkm_eleccion = atoi(buffer);
+
+    while(pkm_eleccion > lista_tamanio(lista_pkm) && pkm_eleccion < -1)
+    {
+        puts("ingrese pokemon valido");     
+        fgets(buffer,MAX_LINEA,stdin);
+        pkm_eleccion = atoi(buffer);
+    }
+
+    pokemon_t * a_observar_pkm = lista_elemento_en_posicion(lista_pkm,(size_t)pkm_eleccion);
+
+    dibujar_pkm((char*)pokemon_nombre(a_observar_pkm));
+
+    con_cada_ataque(a_observar_pkm,mostrar_ataques,NULL);
 	
+    }while(pkm_eleccion != -1);
+
+    puts(LIMPIAR_PANTALLA);
 	free(posiciones);
 
     return true;
