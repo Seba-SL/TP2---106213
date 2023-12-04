@@ -55,7 +55,6 @@ bool informacion_pokemones(void *menu);
 //auxiliares
 void jugador_seleccionar_pokemon( elecciones_t * elecciones);
 jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3);
-void destruir_elecciones(elecciones_t * eleccionn);
 JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario);
 
 JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego, elecciones_t * jugador1 ,adversario_t*rival);
@@ -294,24 +293,16 @@ bool jugar(void* menu)
    
     adversario_t *rival = adversario_crear(juego_listar_pokemon((juego_t*)juego));
     
-    if(jugador1_e == NULL || rival == NULL)
-    { 
-        adversario_destruir(rival);
-        destruir_elecciones(jugador1_e);
-        return false;
-    }
     
-
     jugador1_e->juego = juego;
 
     estado = precompetencia(menu,juego,jugador1_e,rival);
 
     estado = competencia(menu,juego,jugador1_e,rival);
  
-    free(jugador1_e);
+   
     adversario_destruir(rival);
-    destruir_elecciones(jugador1_e);
-
+    free(jugador1_e);
     puts(MENSAJE_FIN_PARTIDA);
     return !estado;
 
@@ -349,8 +340,7 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
 
     if(estado != TODO_OK)
     { 
-        adversario_destruir(adversario);
-        free(jugador1); 
+      
         return false;
     }
 
@@ -365,7 +355,7 @@ int comparar_nombres_en_juego(void* pkm_actual ,void * objetivo )
 
 JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1,adversario_t*rival)
 {
-    if(!menu || !juego)
+    if(!menu || !juego || !elecciones_j1 || !rival)
     { 
          return ERROR_GENERAL;
     }
@@ -427,7 +417,7 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
         
     printf("\nTurno de %s , elegi tu pokemon a usar!\n",dar_nombre_usuario(menu));
 
-    printf("\n[0]: %s  [1]: %s [2]: %s",p1,p2,p3 );
+    printf("\n[0]: %s  [1]: %s [2]: %s\n\n",p1,p2,p3 );
    
     fgets(buffer,MAX_LINEA,stdin);
     int pkm_eleccion = atoi(buffer);
@@ -465,12 +455,14 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
     printf("\nElegi que ataque usara!\n");
 
     fgets(buffer,MAX_LINEA,stdin);
+    buffer[strlen(buffer)-1] = 0;
     const struct ataque * ataque_elegido = pokemon_buscar_ataque(pkm_elegido,(const char*)buffer);
        
     while(ataque_elegido == NULL)
     {
         puts("ese sabes que no lo tengo che,pedime otro ");
         fgets(buffer,MAX_LINEA,stdin);
+        buffer[strlen(buffer)-1] = 0;
         ataque_elegido = pokemon_buscar_ataque(pkm_elegido,buffer);
     }
 
@@ -573,10 +565,3 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
 
 			
  }
-void destruir_elecciones(elecciones_t * eleccionn)
-{
-    free(eleccionn->eleccionJugador1);  
-    free(eleccionn->eleccionJugador2);
-    free(eleccionn->eleccionJugador3);
-
-}
