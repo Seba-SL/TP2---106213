@@ -228,7 +228,8 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 		return resultado;
 
 	if(!jugada_disponible(juego->jugadores[JUGADOR1].jugadas_disponibles,jugada_jugador1))
-	{
+	{	
+		
 		return resultado;
 	}
 

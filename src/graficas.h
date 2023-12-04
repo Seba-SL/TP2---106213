@@ -326,6 +326,7 @@ void mensaje_cargando()
  void mensaje_cargado_con_exito()
  {
     puts(LIMPIAR_PANTALLA);
+    bienvenida();
     printf("  _____           _              _                        _ _     _       _ \n");
     printf(" / ____|         | |            | |                      | (_)   | |     | |\n");
     printf("| |     __ _ _ __| |_ _   _  ___| |__   ___   __   ____ _| |_  __| | ___ | |\n");
@@ -338,7 +339,7 @@ void mensaje_cargando()
  void carga_invalida()
  {
     puts(LIMPIAR_PANTALLA);
-
+    bienvenida();
     printf("  _____           _              _             _                 _ _     _       _ \n");
     printf(" / ____|         | |            | |           (_)               | (_)   | |     | |\n");
     printf("| |     __ _ _ __| |_ _   _  ___| |__   ___    _ _ ____   ____ _| |_  __| | ___ | |\n");

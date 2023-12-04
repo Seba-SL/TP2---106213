@@ -28,7 +28,7 @@ typedef struct
 
  struct menu
 {
-    void *aplicacion;
+    void *aplicacion; 
     char usuario[MAX_NOMBRE];
     hash_t *comandos;
     char* archivo_auxiliar;
@@ -148,7 +148,7 @@ bool mostrar_comandos(const char *clave, void *valor, void *aux)
 
     informacion_comando_t  *info_comando = valor;
 
-    printf("%s %s \t",(char*)clave,(char*)info_comando->descripcion);
+    printf("[%s] %s \t",(char*)clave,(char*)info_comando->descripcion);
     return true;
 }
 
