@@ -11,6 +11,7 @@
 #define LIMPIAR_PANTALLA "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 #define ESPACIO_MEDIO "\n\n\n\n\n\n\n\n\n\n\n\n"
 
+
 //Mensajes  y dibujos
 void bienvenida();
 void mensaje_cargando();

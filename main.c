@@ -415,7 +415,7 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
          return false;
        }
      
-    printf("\nTurno de elegir pokemones del adversario \n");
+  
     
     char *eleccion_adversario1 = NULL, *eleccion_adversario2 = NULL, *eleccion_adversario3 = NULL;
     
@@ -428,7 +428,7 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
      adversario_seleccionar_pokemon(adversario,&eleccion_adversario1,&eleccion_adversario2,&eleccion_adversario3);
 
     //Aca le guarda en juego_t  e intercambia 
-   estado = juego_seleccionar_pokemon(juego,JUGADOR2,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
+    estado = juego_seleccionar_pokemon(juego,JUGADOR2,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
 
     //Aca le guardo al adversario el tercero q le ortorga el primero
     adversario_pokemon_seleccionado(adversario,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
@@ -436,13 +436,21 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
 
     strcpy(jugador1->eleccionJugador3, eleccion_adversario3);
 
+    
+    dibujar_pkm(jugador1->eleccionJugador3);
+    puts("Fulbo?");
+    delay(TIEMPO_DELAY2);
+    
+    printf("\nBueno %s , lamento decirte que el adversario te robo el tercer pokemon , conformate con %s\n",dar_nombre_usuario(menu),jugador1->eleccionJugador3);
+
     if(estado != TODO_OK)
     { 
         free(posiciones);
         return false;
     }
 
-   
+    printf("\nTurno de elegir pokemones del adversario \n");
+    
     free(posiciones);
     return estado;
 }
@@ -504,7 +512,7 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1
 	}
    
 
-    printf("\n\n\tResultado ronda Partida:\nJugador 1 %d\nAdversario %d\n", juego_obtener_puntaje(juego,JUGADOR1), juego_obtener_puntaje(juego,JUGADOR2));
+    printf("\n\n\tResultado Partida:\nJugador 1 %d\nAdversario %d\n", juego_obtener_puntaje(juego,JUGADOR1), juego_obtener_puntaje(juego,JUGADOR2));
 
     return TODO_OK;
 }
@@ -648,9 +656,7 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
 
 		elecciones->eleccionJugador3 = (char*)pokemon_nombre(lista_elemento_en_posicion(lista_pkm,(size_t)pkm3_p));
 
-		dibujar_pkm(elecciones->eleccionJugador3);
-        puts("Fulbo?");
-        delay(TIEMPO_DELAY2);
+		
 
 			
  }

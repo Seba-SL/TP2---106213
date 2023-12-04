@@ -115,10 +115,23 @@ jugada_t adversario_proxima_jugada(adversario_t *adversario)
 {
 	jugada_t j = { .ataque = "", .pokemon = "" };
 
-	pokemon_t *jugada_pkm = lista_elemento_en_posicion(adversario->sus_pokemones,1);
 	
-	con_cada_ataque(jugada_pkm,elige_ataque,&j.ataque);
-	strcpy(j.pokemon,pokemon_nombre(jugada_pkm));
+	size_t pos_aleatoria = 0;
+
+	pokemon_t *pkm = lista_elemento_en_posicion(adversario->sus_pokemones,pos_aleatoria);
+
+	//itera hasta conseguir un pokemon valido
+	while(pkm == NULL )
+	{
+		pos_aleatoria++;
+		pkm = lista_elemento_en_posicion(adversario->sus_pokemones,pos_aleatoria);
+	}
+
+	strcpy(j.pokemon,pokemon_nombre(pkm));
+
+	//elije un ataque
+	con_cada_ataque(pkm,elige_ataque,&j.ataque);
+
 
 	return j;
 }
