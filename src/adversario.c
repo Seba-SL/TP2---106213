@@ -2,154 +2,231 @@
 #include "juego.h"
 #include "adversario.h"
 #include "pokemon.h"
+
 #include <stdlib.h>
-#include <string.h>
-#include "ataque.h"
 #include "abb.h"
+#include <string.h>
+#include <time.h>
+#include "ataque.h"
 
-struct adversario
-{
+typedef struct {
+	pokemon_t *pokemon;
+	const struct ataque *ataque;
+} pareja_t;
 
-	lista_t *pokemones_disponibles;
+struct adversario {
+	lista_t *lista_pokemones;
 
-	lista_t *sus_pokemones;
+	abb_t *pokemones_adversario;
+	abb_t *pokemones_jugador;
 
 	abb_t *jugadas_disponibles;
 
+	pareja_t *buffer;
 };
 
-typedef struct ataque ataque_t;
+typedef struct {
+	abb_t *arbol;
+	pokemon_t *pokemon;
+} disponible_t;
 
-adversario_t *adversario_crear(lista_t *pokemon)
+//---------------------------AUX---------------------------
+/*
+ * Comparador para buscar en una lista de pokemones
+ * (compara con el nombre del pokemon).
+ */
+int comparador_pokemones_lista_adv(void *a, void *b);
+/*
+ * Comparador para buscar en un arbol de pokemones
+ * (compara por el nombre del pokemon).
+ */
+int comparador_pokemones_abb(void *a, void *b);
+/*
+ * Comparador para buscar en un arbol de parejas
+ * que contiene pokemones y un ataque (compara por
+ * el nombre del ataque).
+ */
+int comparador_pareja_abb(void *a, void *b);
+//---------------------------------------------------------
+
+//-----------AUX_adversario_seleccionar_pokemon------------
+pareja_t *crear_pareja(pokemon_t *pokemon, const struct ataque *ataque);
+void llenar_parejas_en_arbol(const struct ataque *ataque, void *aux);
+void destruir_pareja(void *aux);
+//---------------------------------------------------------
+
+adversario_t *adversario_crear(lista_t *pokemon) //listo
 {
-	if(pokemon == NULL)
+	if (pokemon == NULL)
 		return NULL;
 
-	adversario_t * adversario = calloc(1,sizeof(adversario_t ));
-
-	adversario->sus_pokemones = lista_crear();
-	if(adversario->sus_pokemones == NULL)
-	{
-		free(adversario);
+	adversario_t *adversario = calloc(1, sizeof(adversario_t));
+	if (adversario == NULL)
 		return NULL;
-	}
 
-	adversario->pokemones_disponibles = pokemon;
+	adversario->lista_pokemones = pokemon;
+	adversario->pokemones_adversario = abb_crear(comparador_pokemones_abb);
+	adversario->pokemones_jugador = abb_crear(comparador_pokemones_abb);
+	adversario->jugadas_disponibles = abb_crear(comparador_pareja_abb);
 
 	return adversario;
 }
 
-void insertar_ataque_adversario( const ataque_t *ataque , void * arbol_disponibles)
+bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,
+				    char **nombre2, char **nombre3) //listo
 {
-	
-	arbol_disponibles = abb_insertar(arbol_disponibles,(char*)ataque->nombre);
-
-}
-
-
-
-void asignar_jugadas_disponibles_en_adversario(abb_t *jugadas_disponibles,pokemon_t *pkm1)
-{
-	jugadas_disponibles = abb_insertar(jugadas_disponibles,(char*)pokemon_nombre(pkm1));
-
-	con_cada_ataque(pkm1,insertar_ataque_adversario,jugadas_disponibles);
-
-}
-
-bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,char **nombre2, char **nombre3)
-{
-	if(adversario == NULL)
+	if (adversario == NULL)
 		return false;
 
-	lista_t *pokemones_disp = adversario->pokemones_disponibles;
+	pokemon_t *poke1_adversario = (pokemon_t *)lista_elemento_en_posicion(
+		adversario->lista_pokemones, 0);
+	pokemon_t *poke2_adversario = (pokemon_t *)lista_elemento_en_posicion(
+		adversario->lista_pokemones, 1);
+	pokemon_t *poke3_jugador = (pokemon_t *)lista_elemento_en_posicion(
+		adversario->lista_pokemones, 2);
 
+	if (poke1_adversario == NULL || poke2_adversario == NULL ||
+	    poke3_jugador == NULL)
+		return false;
 
+	*nombre1 = (char *)pokemon_nombre(poke1_adversario);
+	*nombre2 = (char *)pokemon_nombre(poke2_adversario);
+	*nombre3 = (char *)pokemon_nombre(poke3_jugador);
 
-	pokemon_t * pkm1 = lista_elemento_en_posicion(pokemones_disp,1);
-	pokemon_t * pkm2 =  lista_elemento_en_posicion(pokemones_disp,4);
-	pokemon_t * pkm3 =  lista_elemento_en_posicion(pokemones_disp,4);
+	if (*nombre1 == NULL || *nombre2 == NULL || *nombre3 == NULL)
+		return false;
 
-	strcpy(*nombre1 ,pokemon_nombre(pkm1));
-	strcpy(*nombre2 ,pokemon_nombre(pkm2));
-	strcpy(*nombre3 ,pokemon_nombre(pkm3));
-	
+	//inserto el poke1 y poke2 en adversario
+	abb_insertar(adversario->pokemones_adversario, poke1_adversario);
+	abb_insertar(adversario->pokemones_adversario, poke2_adversario);
+	abb_insertar(adversario->pokemones_jugador, poke2_adversario);
 
-	lista_insertar(adversario->sus_pokemones,pkm1);
-    lista_insertar(adversario->sus_pokemones,pkm2);
-	
-	asignar_jugadas_disponibles_en_adversario(adversario->jugadas_disponibles, pkm1);
-	asignar_jugadas_disponibles_en_adversario(adversario->jugadas_disponibles, pkm2);
-
+	//inserto las jugadas diponibles(pokemon y ataque) en el arbol
+	disponible_t dispo1 = { .arbol = adversario->jugadas_disponibles,
+				.pokemon = poke1_adversario };
+	disponible_t dispo2 = { .arbol = adversario->jugadas_disponibles,
+				.pokemon = poke2_adversario };
+	con_cada_ataque(poke1_adversario, llenar_parejas_en_arbol, &dispo1);
+	con_cada_ataque(poke2_adversario, llenar_parejas_en_arbol, &dispo2);
 	return true;
 }
 
-
-int comparar_nombres_adversario(void* pkm_actual ,void * objetivo )
+bool adversario_pokemon_seleccionado(adversario_t *adversario, char *nombre1,
+				     char *nombre2, char *nombre3) //listo
 {
-	return strcmp(pokemon_nombre(pkm_actual),objetivo);
-}
-
-bool adversario_pokemon_seleccionado(adversario_t *adversario, char *nombre1,char *nombre2, char *nombre3)
-{
-	if(nombre3 == NULL)
+	if (adversario == NULL || nombre3 == NULL)
 		return false;
 
-	pokemon_t * pkm3 = lista_buscar_elemento(adversario->pokemones_disponibles,comparar_nombres_adversario,nombre3);
+	//busco el pokemon segun su nombre
+	pokemon_t *poke1_jugador = (pokemon_t *)lista_buscar_elemento(
+		adversario->lista_pokemones, comparador_pokemones_lista_adv,
+		nombre1);
+	pokemon_t *poke2_jugador = (pokemon_t *)lista_buscar_elemento(
+		adversario->lista_pokemones, comparador_pokemones_lista_adv,
+		nombre2);
+	pokemon_t *poke3_adversario = (pokemon_t *)lista_buscar_elemento(
+		adversario->lista_pokemones, comparador_pokemones_lista_adv,
+		nombre3);
 
-	
-	lista_insertar(adversario->sus_pokemones,pkm3);
+	//inserto el poke3
+	abb_insertar(adversario->pokemones_jugador, poke1_jugador);
+	abb_insertar(adversario->pokemones_jugador, poke2_jugador);
+	abb_insertar(adversario->pokemones_adversario, poke3_adversario);
 
-	adversario->jugadas_disponibles = abb_insertar(adversario->jugadas_disponibles,nombre3);
-	con_cada_ataque(pkm3,insertar_ataque_adversario,adversario->jugadas_disponibles);
-
-
+	disponible_t dispo3 = { .arbol = adversario->jugadas_disponibles,
+				.pokemon = poke3_adversario };
+	con_cada_ataque(poke3_adversario, llenar_parejas_en_arbol, &dispo3);
 	return true;
 }
 
-void elige_ataque(const struct ataque *ataque_actual, void * nombre)
-{
-	strcpy(nombre,ataque_actual->nombre);
-
-}
 jugada_t adversario_proxima_jugada(adversario_t *adversario)
 {
-	jugada_t j = { .ataque = "", .pokemon = "" };
+	//aca voy a obtener mi elemento de mi jugadas disponibles
+	void *pareja_;
 
-	
-	size_t pos_aleatoria = 0;
+	//primero adquiero una jugada disponible:
+	abb_recorrer(adversario->jugadas_disponibles, INORDEN, &pareja_, 1);
 
-	pokemon_t *pkm = lista_elemento_en_posicion(adversario->sus_pokemones,pos_aleatoria);
+	pareja_t *pareja = pareja_;
+	//obtengo de esa jugada disponible el nombre del pokemon y su ataque
+	const char *nombre_pokemon = pareja->ataque->nombre;
+	const char *nombre_ataque = pokemon_nombre(pareja->pokemon);
 
-	//itera hasta conseguir un pokemon valido
-	while(pkm == NULL )
-	{
-		pos_aleatoria++;
-		pkm = lista_elemento_en_posicion(adversario->sus_pokemones,pos_aleatoria);
-	}
+	//copio en mi jugada el NOMBRE DEL POKEMON y el NOMBRE DEL ATAQUE
+	jugada_t jugada;
+	strcpy(jugada.ataque, nombre_pokemon);
+	strcpy(jugada.pokemon, nombre_ataque);
 
-	strcpy(j.pokemon,pokemon_nombre(pkm));
-
-	//elije un ataque
-	con_cada_ataque(pkm,elige_ataque,&j.ataque);
-
-
-	return j;
+	//quito de jugadas diponibles la jugada que acabo de devolver
+	abb_quitar(adversario->jugadas_disponibles, pareja);
+	adversario->buffer = pareja;
+	return jugada;
 }
 
 void adversario_informar_jugada(adversario_t *a, jugada_t j)
 {
+	pareja_t *pareja = a->buffer;
+	if (strcmp(j.pokemon, "invalido") == 0) {
+		abb_insertar(a->jugadas_disponibles, pareja);
+		return;
+	}
+	free(pareja);
+	return;
 }
 
 void adversario_destruir(adversario_t *adversario)
 {
-	abb_destruir_todo(adversario->jugadas_disponibles,NULL);
-	lista_destruir_todo(adversario->pokemones_disponibles,NULL);
-	lista_destruir_todo(adversario->sus_pokemones,NULL);
-
-
+	abb_destruir(adversario->pokemones_adversario);
+	abb_destruir(adversario->pokemones_jugador);
+	abb_destruir_todo(adversario->jugadas_disponibles, destruir_pareja);
 	free(adversario);
-
-
-
-
 }
+
+//---------------------------AUX---------------------------
+int comparador_pokemones_lista_adv(void *a, void *b)
+{
+	pokemon_t *pokemon = a;
+	char *nombre_pokemon = b;
+	return strcmp(pokemon_nombre(pokemon), nombre_pokemon);
+}
+int comparador_pokemones_abb(void *a, void *b)
+{
+	return strcmp(pokemon_nombre((pokemon_t *)a),
+		      pokemon_nombre((pokemon_t *)b));
+}
+int comparador_pareja_abb(void *a, void *b)
+{
+	pareja_t *pareja1 = (pareja_t *)a;
+	pareja_t *pareja2 = (pareja_t *)b;
+	return strcmp(pareja1->ataque->nombre, pareja2->ataque->nombre);
+}
+//---------------------------------------------------------
+
+//-----------AUX_adversario_seleccionar_pokemon------------
+pareja_t *crear_pareja(pokemon_t *pokemon, const struct ataque *ataque)
+{
+	pareja_t *pareja = calloc(1, sizeof(pareja_t));
+	if (pareja == NULL)
+		return NULL;
+
+	pareja->pokemon = pokemon;
+	pareja->ataque = ataque;
+	return pareja;
+}
+void llenar_parejas_en_arbol(const struct ataque *ataque, void *aux)
+{
+	disponible_t *dispo = aux;
+
+	pareja_t *p = crear_pareja(dispo->pokemon, ataque);
+	if (p == NULL)
+		return;
+
+	abb_insertar(dispo->arbol, p);
+}
+void destruir_pareja(void *aux)
+{
+	if (aux == NULL)
+		return;
+	free((pareja_t *)aux);
+}
+//---------------------------------------------------------

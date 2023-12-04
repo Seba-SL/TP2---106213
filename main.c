@@ -328,8 +328,10 @@ bool informacion_pokemones(void *menu)
     fgets(buffer,MAX_LINEA,stdin);
     pkm_eleccion = atoi(buffer);
 
+
     while(pkm_eleccion >= lista_tamanio(lista_pkm)  &&  pkm_eleccion != -1)
     {
+        
         puts("ingrese pokemon valido");     
 
         fgets(buffer,MAX_LINEA,stdin);
@@ -344,7 +346,6 @@ bool informacion_pokemones(void *menu)
 
         con_cada_ataque(a_observar_pkm,mostrar_ataques,NULL);
 
-       
     }
 	
     }while(pkm_eleccion != -1);
@@ -450,7 +451,7 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
     }
 
     printf("\nTurno de elegir pokemones del adversario \n");
-    
+
     free(posiciones);
     return estado;
 }
@@ -533,6 +534,7 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
 
     while(pkm_eleccion > 2 || pkm_eleccion < 0)
     {
+      
         puts("ingrese pokemon valido");     
         fgets(buffer,MAX_LINEA,stdin);
         pkm_eleccion = atoi(buffer);
@@ -574,8 +576,10 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
         ataque_elegido = pokemon_buscar_ataque(pkm_elegido,buffer);
     }
 
-
+    
     strcpy(jugada_actual.pokemon,ataque_elegido->nombre);
+
+    puts(LIMPIAR_PANTALLA);
 
     return jugada_actual;
     
