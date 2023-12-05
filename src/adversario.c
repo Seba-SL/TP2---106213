@@ -19,7 +19,8 @@ typedef struct {
 
 
 
-struct adversario {
+struct adversario
+{
 	lista_t *lista_pokemones;
 
 	abb_t *pokemones_adversario;
