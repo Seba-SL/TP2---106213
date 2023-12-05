@@ -29,7 +29,8 @@ Este ultimo trabajo práctico consta de utilizar los TDA´s creados a lo largo d
 
 Estructuras utilizadas para implementar la lógica del juego y del adversario:
 
-![tp2-Página-2 drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/47012f60-41c7-426a-9e30-97b6c5999fec)
+
+![este drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/6fe1621c-7db1-4d48-a574-fb8351692626)
 
 
 
