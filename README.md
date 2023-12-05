@@ -4,32 +4,40 @@
 
 # TP2
 
-## Repositorio de (Nombre Apellido) - (Padrón) - (Mail)
+## Repositorio de Sebastian Nahuel Lazo - 106213 - slazo@fi.uba.ar
 
 - Para compilar:
 
 ```bash
-línea de compilación
+make main
 ```
 
 - Para ejecutar:
 
 ```bash
-línea de ejecución
+./main
 ```
 
 - Para ejecutar con valgrind:
 ```bash
-línea con valgrind
+make
 ```
 ---
-##  Funcionamiento
+##  Implementación de juego 
 
-Explicación de cómo funcionan las estructuras desarrolladas en el TP y el funcionamiento general del mismo.
+Este ultimo trabajo práctico consta de utilizar los TDA´s creados a lo largo de la cursada para la implementación de un juego que haga uso de estos para manejar datos del mismo.
 
-Aclarar en esta parte todas las decisiones que se tomaron al realizar el TP, cosas que no se aclaren en el enunciado, fragmentos de código que necesiten explicación extra, etc.
+Estructuras utilizadas para implementar la lógica del juego y del adversario:
 
-Incluír **EN TODOS LOS TPS** los diagramas relevantes al problema (mayormente diagramas de memoria para explicar las estructuras, pero se pueden utilizar otros diagramas si es necesario).
+
+![este drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/6fe1621c-7db1-4d48-a574-fb8351692626)
+
+
+El usuario interactua con el juego a traves de una interfaz de usuario implementada con el TDA menu_t:
+Principales operaciones del TDA menu
+![menu_t drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/518bb1f2-f4e9-43d3-9470-10919f54e562)
+
+
 
 ### Por ejemplo:
 
@@ -53,8 +61,3 @@ vector_original = vector;
 <div align="center">
 <img width="70%" src="img/diagrama2.svg">
 </div>
-
----
-
-## Respuestas a las preguntas teóricas
-Incluír acá las respuestas a las preguntas del enunciado (si aplica).
