@@ -43,6 +43,9 @@ El usuario interactua con el juego a traves de una interfaz de usuario implement
 Principales operaciones del TDA menu_t
 ![menu_t drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/518bb1f2-f4e9-43d3-9470-10919f54e562)
 
+Flujo del menu
+![flujoMenu drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/fdfc9b2b-9649-46bf-93d7-cda0cf93ac67)
+
 
 Imagenes de la interfaz 
 
