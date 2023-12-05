@@ -262,11 +262,6 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 
 	asignar_puntaje( &juego->jugadores[JUGADOR2].puntaje , atk2,  resultado.jugador2 );
 	
-
-	printf("puntaje q se suma en juego j1 : %d",juego->jugadores[JUGADOR2].puntaje);
-	
-	printf("puntaje q se suma en juego j2: %d",juego->jugadores[JUGADOR1].puntaje);
-
 	
 	juego->cantidad_movimientos--;
 
