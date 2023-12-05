@@ -483,7 +483,7 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1
 
 		//jugar la ronda y después comprobar que esté todo ok, si no, volver a pedir la jugada del jugador
 
-        printf("Estoy enviando a juego_jugar_turno \nesto essto deberia ser un pokemon %s \nesto un ataque %s\n",juagada1.pokemon,juagada1.ataque);
+      
 		resultado_ronda = juego_jugar_turno(juego, juagada1, jugada_adversario);
 
 

@@ -224,10 +224,7 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 	resultado.jugador2 = ATAQUE_ERROR;
 
 
-	printf("\nEn juego.c llego esto j1 %s y %s\n",jugada_jugador1.pokemon , jugada_jugador1.ataque);
 	
-	printf("En juego.c llego esto j2 %s y %s\n",jugada_jugador2.pokemon , jugada_jugador2.ataque);
-
 	if(!juego)
 		return resultado;
 
