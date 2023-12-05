@@ -63,8 +63,9 @@ Carga de archivo valida y consulta de pokemon:
 
 ![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/03cd4011-cd88-4dc4-8055-2278c7f5580e)
 
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/52744594-10d4-4e0b-9011-825e8d769c7f)
 
-![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/ea4cce98-2eff-4462-8499-5903ebbd8480)
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/aebb18de-06c2-478e-833a-55bbd5561dac)
 
 
 
