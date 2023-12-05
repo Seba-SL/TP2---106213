@@ -34,6 +34,9 @@ Estructuras utilizadas para implementar la lógica del juego y del adversario:
 
 
 El usuario interactua con el juego a traves de una interfaz de usuario implementada con el TDA menu_t:
+Principales operaciones del menu
+![menu_t drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/518bb1f2-f4e9-43d3-9470-10919f54e562)
+
 
 
 ### Por ejemplo:
