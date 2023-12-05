@@ -20,6 +20,7 @@ void mensaje_cargando();
 void mensaje_cargado_con_exito();
 void carga_invalida();
 void dibujar_pkm(char * pkm_nombre);
+void batallan();
 void pierde();
 void gana();
 
@@ -372,6 +373,29 @@ printf("\n  ____                       _       _ \n");
   printf("| |  _ / _` | '_ \\ / _` / __| __/ _ \\ |\n");
   printf("| |_| | (_| | | | | (_| \\__ \\ ||  __/_|\n");
   printf(" \\____|\\__,_|_| |_|\\__,_|___/\\__\\___(_)\n\n");
+
+}
+
+void batallan()
+{
+  printf("              .\n");
+  printf("              .\n");
+  printf("              |					\n");
+  printf("     .               /				\n");
+  printf("      \\       I     				\n");
+  printf("                  /\n");
+  printf("        \\  ,g88R_\n");
+  printf("          d888(`  ).                   _\n");
+  printf(" -  --==  888(     ).=--           .+(`  )`.\n");
+  printf(")         Y8P(       '`.          :(   .    )\n");
+  printf("        .+(`(      .   )     .--  `.  (    ) )\n");
+  printf("       ((    (..__.:'-'   .=(   )   ` _`  ) )\n");
+  printf("`.     `(       ) )       (   .  )     (   )  ._\n");
+  printf("  )      ` __.:'   )     (   (   ))     `-'.:(`  )\n");
+  printf(")  )  ( )       --'       `- __.'         :(      ))\n");
+  printf(".-'  (_.'          .')                    `(    )  )\n");
+  printf("                  (_  )                     ` __.:'\n");
+  printf("\n--..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.-a:f--.\n\n");
 
 }
 

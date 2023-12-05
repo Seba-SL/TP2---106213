@@ -497,6 +497,8 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1
 		//Si se pudo jugar el turno, le informo al adversario la jugada realizada por el jugador
 		//adversario_informar_jugada(adversario, jugada_jugador);
 
+        batallan();
+
 		 printf("\nRonda %zu:P1 %d P2 %d \n",ronda_n,juego_obtener_puntaje(juego,JUGADOR1),juego_obtener_puntaje(juego,JUGADOR2));
          ronda_n++;
 	}
