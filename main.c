@@ -97,7 +97,7 @@ int main(int argc,  char *argv[])
 
     estado = menu_agregar_comando(nueva_partida,"j","Jugar",jugar);
 
-    estado = menu_agregar_comando(nueva_partida,"i","Ver informacion de los pokemones",informacion_pokemones);
+    estado = menu_agregar_comando(nueva_partida,"i","Ver informacion del juego",informacion_pokemones);
 
     puts(LIMPIAR_PANTALLA);
     bienvenida();
@@ -217,6 +217,9 @@ bool pedir_archivo(void* menu)
     
     estado = asignar_archivo_menu(menu,nombre_archivo);
 
+ 
+    vaciar_cargas_anteriores(l_pkm);
+    
     estado = juego_cargar_pokemon((juego_t*)entregar_app(menu),entregar_nombre_archivo(menu));
 
     if(estado == TODO_OK)
@@ -318,6 +321,7 @@ bool informacion_pokemones(void *menu)
 {   
     menu_t *menuu = menu;
     juego_t * juego = entregar_app(menuu);
+    char buffer;
 
     if(!entregar_nombre_archivo(menuu) || lista_vacia(juego_listar_pokemon(juego)))
     {
@@ -326,11 +330,34 @@ bool informacion_pokemones(void *menu)
         return true;
     }
 
+    
+   
+
     lista_t *lista_pkm = juego_listar_pokemon(juego);
 
     size_t *posiciones = calloc(1,sizeof(size_t));
 
-    lista_con_cada_elemento(lista_pkm,imprimir_info_pkm,posiciones);
+    puts("[r] Ver Reglas \t[a] ver ataques");
+     
+    scanf("%c",&buffer);
+    fflush(stdin);
+
+    switch(buffer)
+    {
+        case 'r':
+            reglas_del_juego();
+            break;
+        case 'a': 
+             lista_con_cada_elemento(lista_pkm,imprimir_info_pkm,posiciones);
+            
+            puts("");
+            scanf("%c",&buffer);
+            fflush(stdin);
+          break;  
+
+    }
+
+    
 
     	
 	free(posiciones);
@@ -501,10 +528,13 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1
    
     if( juego_obtener_puntaje(juego,JUGADOR1) < juego_obtener_puntaje(juego,JUGADOR2) )
     {
-         pierde();
-    }else gana();
+        pierde();
+    }
 
-
+    if( juego_obtener_puntaje(juego,JUGADOR1) > juego_obtener_puntaje(juego,JUGADOR2) )
+    {
+        gana();
+    }
 
     printf("\n\n\tResultado Partida:\nJugador 1 %d\nAdversario %d\n", juego_obtener_puntaje(juego,JUGADOR1), juego_obtener_puntaje(juego,JUGADOR2));
 

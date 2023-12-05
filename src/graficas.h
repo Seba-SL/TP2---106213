@@ -16,6 +16,7 @@ char* tipos[] = {" NORMAL","FUEGO","AGUA", "PLANTA", "ELECTRICO", "ROCA"};
 
 //Mensajes  y dibujos
 void bienvenida();
+void reglas_del_juego();
 void mensaje_cargando();
 void mensaje_cargado_con_exito();
 void carga_invalida();
@@ -448,5 +449,36 @@ void batallan(size_t n)
  
 }
 
+void reglas_del_juego()
+{
+  puts("Reglas del juego\n");
+
+  printf("Al principio del juego se le presenta a los jugadores un listado de los pokemon disponibles.\n");
+  printf("el jugador selecciona 3 pokemon de los disponibles.\n");
+  printf("Los 3 pokemon deben ser diferentes, no se puede repetir pokemon\n");
+  printf("Ambos jugadores realizan su elección sin conocer la elección del otro jugador\n");
+  printf("Una vez seleccionados los pokemon por ambos usuario, se informan las elecciones.\n");
+  printf("Los primeros 2 pokemon seleccionados por el usuario son pokemon propios mientras que el tercer pokemon debe ser asignado como tercer pokemon del otro jugador\n");
+  printf("Por ejemplo, el jugador 1 selecciona A, B y C; el jugador 2 selecciona D, E y F. El equipo final del jugador 1 está formado por A, B y F, mientras que el equipo de jugador 2 queda D, E y C.\n");
+  printf("Si bien cada jugador debe seleccionar 3 pokemon diferentes, es posible que en el equipo final queden pokemon duplicados (ya que el tercer pokemon es elegido secretamente por el otro jugador)\n");
+  printf("El juego se desarrolla por rondas. Como cada jugador tiene 3 pokemon y cada pokemon tiene 3 ataques, la cantidad de rondas del juego siempre es 9.\n");
+  printf("En cada ronda cada jugador decide un pokemon y un ataque de ese pokemon.\n");
+  printf("Los pokemon seleccionados se enfrentan.\n");
+  printf("Se le asigna a cada jugador un puntaje que se calcula en base al poder del ataque y el tipo del ataque y del pokemon adversario.\n");
+  printf("Una vez utilizado un ataque de un pokemon, este no puede ser utilizado nunca mas durante el juego.\n");
+  printf("Al finalizar el juego, gana el jugador con mas puntos.\n\n");
+
+
+
+    char buffer;
+
+    puts("");
+
+    scanf("%c",&buffer);
+    fflush(stdin);
+
+   
+
+}
 
 #endif // GRAFICAS_H_
