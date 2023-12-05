@@ -11,6 +11,8 @@
 #define LIMPIAR_PANTALLA "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 #define ESPACIO_MEDIO "\n\n\n\n\n\n\n\n\n\n\n\n"
 
+char* tipos[] = {" NORMAL","FUEGO","AGUA", "PLANTA", "ELECTRICO", "ROCA"};
+
 
 //Mensajes  y dibujos
 void bienvenida();
