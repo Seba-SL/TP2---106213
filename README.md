@@ -72,7 +72,7 @@ Carga de archivo valida y consulta de pokemon:
 
 Análisis de la complejidad de funciones
 
-
+juego_jugar_turno():
 ```c
 resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,jugada_t jugada_jugador2)
 {
@@ -127,5 +127,7 @@ T(N): 4*O(N/2) + 4*O(N) + K*O(1)
 
 Resulta en : T(N)-> O(N)
 
+juego_seleccionar_pokemon():
+Esta funcion hace uso de pokemon_buscar() dos veces , siendo esta de compledidad O(N) en notacion big O , como utiliza otras funciones de inserción , estas tendran una complejidad menor ,por lo tanto la complejidad final en el análisis es de complejidad O(N).
 
 </div>
