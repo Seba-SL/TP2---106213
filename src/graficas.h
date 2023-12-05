@@ -20,7 +20,7 @@ void mensaje_cargando();
 void mensaje_cargado_con_exito();
 void carga_invalida();
 void dibujar_pkm(char * pkm_nombre);
-void batallan();
+void batallan(size_t n);
 void pierde();
 void gana();
 
@@ -376,7 +376,8 @@ printf("\n  ____                       _       _ \n");
 
 }
 
-void batallan()
+
+void batalla1()
 {
   printf("              .\n");
   printf("              .\n");
@@ -397,6 +398,54 @@ void batallan()
   printf("                  (_  )                     ` __.:'\n");
   printf("\n--..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.-a:f--.\n\n");
 
+}
+
+void batalla2()
+{
+   printf("   ((  \"####@@!!$$    ))\n");
+  printf("       `#####@@!$$`  ))\n");
+  printf("    ((  '####@!!$:\n");
+  printf("   ((  ,####@!!$:   ))\n");
+  printf("       .###@!!$:\n");
+  printf("       `##@@!$:\n");
+  printf("        `#@!!$\n");
+  printf("  !@#    `#@!$:       @#$\n");
+  printf("   #$     `#@!$:       !@!.\n");
+  printf("            '@!$:\n");
+  printf("        '`\\   \"!$: /`'\n");
+  printf("           '\\  '!: /'\n");
+  printf("             \"\\ : /\"\n");
+  printf("  -.\"-/\\\\-.\"//.-\"/:`\\.\"-...S\".\"-=_\\\n");
+  printf("\" -.\"-.\\\"-.\"//.-\".`-.\"_\\-.\".-\".-//\n");
+  printf(".-'  (_.'          .')                    `(    )  )\n");
+  printf("                  (_  )                     ` __.:'\n");
+  printf("\n--..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.-a:f--.\n\n");
+
+}
+
+void batallan(size_t n)
+{
+
+  switch(n)
+  {
+    case 0:
+       batalla1();
+       break;
+   
+    case 1:
+     batalla2();
+      break;
+
+    case 3:
+     batalla2();
+      break;
+
+   
+    default:
+      batalla1();
+      break;
+  }
+ 
 }
 
 
