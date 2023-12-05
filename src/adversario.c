@@ -9,10 +9,15 @@
 #include <time.h>
 #include "ataque.h"
 
+
+
+
 typedef struct {
 	pokemon_t *pokemon;
 	const struct ataque *ataque;
 } pareja_t;
+
+
 
 struct adversario {
 	lista_t *lista_pokemones;
@@ -30,30 +35,23 @@ typedef struct {
 	pokemon_t *pokemon;
 } disponible_t;
 
-//---------------------------AUX---------------------------
-/*
- * Comparador para buscar en una lista de pokemones
- * (compara con el nombre del pokemon).
- */
-int comparador_pokemones_lista_adv(void *a, void *b);
-/*
- * Comparador para buscar en un arbol de pokemones
- * (compara por el nombre del pokemon).
- */
-int comparador_pokemones_abb(void *a, void *b);
-/*
- * Comparador para buscar en un arbol de parejas
- * que contiene pokemones y un ataque (compara por
- * el nombre del ataque).
- */
-int comparador_pareja_abb(void *a, void *b);
-//---------------------------------------------------------
 
-//-----------AUX_adversario_seleccionar_pokemon------------
+
+
+
+/*                 Auxiliares 										*/
+int comparador_pokemones_lista_adv(void *a, void *b);
+int comparador_pokemones_abb(void *a, void *b);
+int comparador_pareja_abb(void *a, void *b);
 pareja_t *crear_pareja(pokemon_t *pokemon, const struct ataque *ataque);
 void llenar_parejas_en_arbol(const struct ataque *ataque, void *aux);
 void destruir_pareja(void *aux);
-//---------------------------------------------------------
+
+
+
+
+
+
 
 adversario_t *adversario_crear(lista_t *pokemon) //listo
 {
@@ -72,8 +70,7 @@ adversario_t *adversario_crear(lista_t *pokemon) //listo
 	return adversario;
 }
 
-bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1,
-				    char **nombre2, char **nombre3) //listo
+bool adversario_seleccionar_pokemon(adversario_t *adversario, char **nombre1, char **nombre2, char **nombre3) //listo
 {
 	if (adversario == NULL)
 		return false;
@@ -182,7 +179,7 @@ void adversario_destruir(adversario_t *adversario)
 	free(adversario);
 }
 
-//---------------------------AUX---------------------------
+
 int comparador_pokemones_lista_adv(void *a, void *b)
 {
 	pokemon_t *pokemon = a;
@@ -200,9 +197,7 @@ int comparador_pareja_abb(void *a, void *b)
 	pareja_t *pareja2 = (pareja_t *)b;
 	return strcmp(pareja1->ataque->nombre, pareja2->ataque->nombre);
 }
-//---------------------------------------------------------
 
-//-----------AUX_adversario_seleccionar_pokemon------------
 pareja_t *crear_pareja(pokemon_t *pokemon, const struct ataque *ataque)
 {
 	pareja_t *pareja = calloc(1, sizeof(pareja_t));

@@ -422,10 +422,6 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
 
     //Aca le guardo al adversario el tercero q le ortorga el primero
     adversario_pokemon_seleccionado(adversario,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
-
-
-    strcpy(jugador1->eleccionJugador3, eleccion_adversario3);
-
     
     dibujar_pkm(jugador1->eleccionJugador3);
     puts("Fulbo?");
