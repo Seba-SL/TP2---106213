@@ -26,6 +26,19 @@ make
 ##  Implementación de juego 
 
 Este ultimo trabajo práctico consta de utilizar los TDA´s creados a lo largo de la cursada para la implementación de un juego que haga uso de estos para manejar datos del mismo.
+
+Estructuras utilizadas para implementar la lógica del juego y del adversario:
+
+
+![este drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/6fe1621c-7db1-4d48-a574-fb8351692626)
+
+
+El usuario interactua con el juego a traves de una interfaz de usuario implementada con el TDA menu_t:
+Principales operaciones del menu
+![menu_t drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/518bb1f2-f4e9-43d3-9470-10919f54e562)
+
+
+
 ### Por ejemplo:
 
 El programa funciona abriendo el archivo pasado como parámetro y leyendolo línea por línea. Por cada línea crea un registro e intenta agregarlo al vector. La función de lectura intenta leer todo el archivo o hasta encontrar el primer error. Devuelve un vector con todos los registros creados.
