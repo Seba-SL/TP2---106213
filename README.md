@@ -38,6 +38,15 @@ Principales operaciones del TDA menu
 ![menu_t drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/518bb1f2-f4e9-43d3-9470-10919f54e562)
 
 
+Imagenes de la interfaz 
+
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/003c41c7-d623-438b-b1ff-8461041700a4)
+
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/39b6df15-9346-49c4-84bf-731d6156714a)
+
+
+
+
 
 ### Por ejemplo:
 
