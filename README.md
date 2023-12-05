@@ -168,4 +168,7 @@ jugada_t adversario_proxima_jugada(adversario_t *adversario)
 }
 ```
 Complejidad O(N)
+
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/dbe54a14-ce61-4f43-ad4e-0e821bf42016)
+
 </div>
