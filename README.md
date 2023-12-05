@@ -67,11 +67,10 @@ Carga de archivo valida y consulta de pokemon:
 
 ![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/aebb18de-06c2-478e-833a-55bbd5561dac)
 
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/ce80760b-7cb8-40eb-8f41-b04f87984bde)
 
 
-
-
-
+Analisis de la complejidad de funciones
 
 
 ### Por ejemplo:
