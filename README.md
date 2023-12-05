@@ -28,10 +28,7 @@ make
 Este ultimo trabajo práctico consta de utilizar los TDA´s creados a lo largo de la cursada para la implementación de un juego que haga uso de estos para manejar datos del mismo.
 
 Estructuras utilizadas para implementar la lógica del juego y del adversario:
-![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/2321b23f-6a4d-4e5b-a59f-de4d044e56a8)
-
-Los TDA que utilizo cada una en su estructua:
-![tipos drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/70b7d53d-50d9-4311-8c67-2f246ec160b6)
+![tp2-Página-2](https://github.com/Seba-SL/TP2---106213/assets/65742172/55932cfd-3517-4493-a33c-e3ca4e635ac9)
 
 
 
