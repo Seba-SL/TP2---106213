@@ -37,6 +37,9 @@ Se uso el TDA lista_t para guardar pokemons disponibles
 Se uso el TDA abb_t para guardar las jugadas disponibles
 Se uso el TDA hash_t para guardar los comandos y sus funciones
 
+![estructuras drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/8a3596ee-a383-4e7c-816b-8fdbfcb4ff6f)
+
+
 
 El usuario interactua con el juego a traves de una interfaz de usuario implementada con el TDA menu_t:
 
