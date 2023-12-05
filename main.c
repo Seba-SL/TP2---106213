@@ -17,8 +17,6 @@
 #define TIEMPO_DELAY 10000000
 #define TIEMPO_DELAY2 1500000
 
-
-
 typedef struct {
 	juego_t *juego;
 

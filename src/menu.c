@@ -142,9 +142,6 @@ void mostrar_menu(menu_t *m)
 		return;
 	}
 
-	//clave es c , j ,i , s
-	//clave , valor->descripicion
-	//clave , valor->funcion
 	hash_con_cada_clave(m->comandos, mostrar_comandos, NULL);
 	printf("\n\n");
 }
