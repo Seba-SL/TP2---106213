@@ -60,6 +60,7 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3);
 JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario);
 JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego, elecciones_t * jugador1 ,adversario_t*rival);
 void delay(int d);
+void vaciar_cargas_anteriores(lista_t * cargados);
 void vuelve_a_pedir(int *pkm1_p , char * buffer);
 
 /*********************************************************************************************************************************************/
@@ -182,14 +183,7 @@ bool pedir_archivo(void* menu)
     
     lista_t *l_pkm = juego_listar_pokemon(entregar_app(menu));
 
-    int tam =  (int)lista_tamanio(l_pkm);
-
-    for(int i=0; i < tam ; i++)
-    {
-       lista_quitar(l_pkm);
-
-    }
-
+    vaciar_cargas_anteriores(l_pkm);
 
 	puts(MSJ_PEDIR_ARCHIVO);
 
@@ -221,6 +215,18 @@ bool pedir_archivo(void* menu)
     return true;
 }
 
+void vaciar_cargas_anteriores(lista_t * cargados)
+{
+    int tam =  (int)lista_tamanio(cargados);
+
+    for(int i=0; i < tam ; i++)
+    {
+       lista_quitar(cargados);
+
+    }
+
+
+}
 
 bool imprimir_nombre_pkm(void* pokemon ,void* posicion)
 {
