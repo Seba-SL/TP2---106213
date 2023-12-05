@@ -45,7 +45,7 @@ abb_t *abb_crear(abb_comparador comparador)
 }
 
 nodo_abb_t *crear_nodo_abb(void *elemento, nodo_abb_t *izquierdo,
-		       nodo_abb_t *derecho)
+			   nodo_abb_t *derecho)
 {
 	nodo_abb_t *nuevo_nodo = malloc(sizeof(nodo_abb_t));
 

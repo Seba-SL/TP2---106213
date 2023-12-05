@@ -88,7 +88,8 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento,
 
 	//Si la posicion en la tabla esta vacia
 	if (hash->tabla_hash[posicion] == NULL) {
-		hash->tabla_hash[posicion] = crear_nodo_hash(clave, elemento, NULL);
+		hash->tabla_hash[posicion] =
+			crear_nodo_hash(clave, elemento, NULL);
 		hash->total++;
 
 		if (anterior != NULL)

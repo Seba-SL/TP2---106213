@@ -34,7 +34,6 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	pokemon_t *pokemon_n, pkm_aux;
 
 	if (path == NULL) {
-	
 		return NULL;
 	}
 
@@ -51,14 +50,12 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	fo = fopen(path, "r");
 
 	if (fo == NULL) {
-		
 		free(ip);
 
 		return NULL;
 	}
 
 	if (!cargar_pokemon(fo, &pkm_aux)) {
-		
 		fclose(fo);
 		free(ip);
 		return NULL;
@@ -67,7 +64,6 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	pokemon_n = (pokemon_t *)malloc(sizeof(pokemon_t));
 
 	if (pokemon_n == NULL) {
-		
 		fclose(fo);
 		pokemon_destruir_todo(ip);
 		return NULL;
@@ -84,7 +80,6 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	while (!feof(fo)) {
 		//carga en stack
 		if (!cargar_pokemon(fo, &pkm_aux)) {
-		
 			fclose(fo);
 
 			return ip;
@@ -93,9 +88,7 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 		pokemon_n = (pokemon_t *)realloc(
 			pokemon_n, (ip->cantidad + 1) * sizeof(pokemon_t));
 
-		if (pokemon_n == NULL) 
-		{
-			
+		if (pokemon_n == NULL) {
 			// no libero ip , ya que el primero se cargo correctamente y permanece apuntando a ese mismo
 			fclose(fo);
 			return ip;
@@ -105,13 +98,11 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 			pokemon_n; // apunta al primer pokemon en el nuevo bloque de memoria asignado por realloc
 
 		if (!copiarPokemon(pokemon_n + ip->cantidad, &pkm_aux)) {
-			
 			// reasigno memoria sin el bloque nuevo sin cargar
 			pokemon_n = (pokemon_t *)realloc(
 				pokemon_n, (ip->cantidad) * sizeof(pokemon_t));
 
 			if (pokemon_n == NULL) {
-				
 				// no libero ip , ya que el primero se cargo correctamente y permanece apuntando a ese mismo
 				fclose(fo);
 				free(ip);
@@ -146,7 +137,6 @@ bool cargar_pokemon(FILE *fo, pokemon_t *pokemon_n)
 	if (pokemon_n->nombre[0] == '\0' ||
 	    tipoInicial == '\0') { // Si algun dato esta vacio devuelvo false
 
-		
 		return false;
 	}
 
@@ -158,7 +148,6 @@ bool cargar_pokemon(FILE *fo, pokemon_t *pokemon_n)
 			     &tipoInicial, &pokemon_n->Ataques[j].poder);
 
 		if (aux != CANTIDAD_ATAQUES) {
-		
 			return false;
 		}
 
@@ -199,8 +188,8 @@ enum TIPO asignarTipo(char inicialTipo)
 
 bool ordenarAlfabeto_pokemones(informacion_pokemon_t *ip)
 {
-	bool ordenados = true; 
-	pokemon_t aux_pkm; 
+	bool ordenados = true;
+	pokemon_t aux_pkm;
 
 	do {
 		ordenados = true;
