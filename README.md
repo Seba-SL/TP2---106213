@@ -121,4 +121,11 @@ resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,ju
 }
 ```
 
+Esta funcion analizada con notación big O es de complejidad O(N)
+
+T(N): 4*O(N/2) + 4*O(N) + K*O(1)
+
+Resulta en : T(N)-> O(N)
+
+
 </div>
