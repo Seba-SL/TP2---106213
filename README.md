@@ -48,6 +48,18 @@ Imagenes de la interfaz
 Principales operaciones del TDA juego_t
 ![juego_t drawio](https://github.com/Seba-SL/TP2---106213/assets/65742172/473ffdd5-06bd-4369-ad21-f04832b46e4f)
 
+Imagenes de la ejecucion del juego:
+
+Carga de archivo valida y consulta de pokemon:
+
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/bbf08756-309e-4733-970c-4dfb761cc02b)
+
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/c50ed4fa-2fee-4d48-8165-e318243c4093)
+
+![image](https://github.com/Seba-SL/TP2---106213/assets/65742172/03cd4011-cd88-4dc4-8055-2278c7f5580e)
+
+
+
 
 
 
