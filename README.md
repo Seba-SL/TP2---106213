@@ -130,4 +130,31 @@ Resulta en : T(N)-> O(N)
 juego_seleccionar_pokemon():
 Esta funcion hace uso de pokemon_buscar() dos veces , siendo esta de compledidad O(N) en notacion big O , como utiliza otras funciones de inserción , estas tendran una complejidad menor ,por lo tanto la complejidad final en el análisis es de complejidad O(N).
 
+Adversario.c
+```c
+jugada_t adversario_proxima_jugada(adversario_t *adversario)
+{
+	//aca voy a obtener mi elemento de mi jugadas disponibles
+	void *pareja_;
+
+	//primero adquiero una jugada disponible:
+	abb_recorrer(adversario->jugadas_disponibles, INORDEN, &pareja_, 1);//O(N)
+
+	pareja_t *pareja = pareja_;
+	//obtengo de esa jugada disponible el nombre del pokemon y su ataque
+	const char *nombre_pokemon = pareja->ataque->nombre;
+	const char *nombre_ataque = pokemon_nombre(pareja->pokemon);
+
+	//copio en mi jugada el NOMBRE DEL POKEMON y el NOMBRE DEL ATAQUE
+	jugada_t jugada;
+	strcpy(jugada.ataque, nombre_pokemon);
+	strcpy(jugada.pokemon, nombre_ataque);
+
+	//quito de jugadas diponibles la jugada que acabo de devolver
+	abb_quitar(adversario->jugadas_disponibles, pareja); // log(n)
+	adversario->buffer = pareja;
+	return jugada;
+}
+```
+Complejidad O(N)
 </div>
