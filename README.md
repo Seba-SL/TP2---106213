@@ -73,5 +73,52 @@ Carga de archivo valida y consulta de pokemon:
 Análisis de la complejidad de funciones
 
 
+```c
+resultado_jugada_t juego_jugar_turno(juego_t *juego, jugada_t jugada_jugador1,jugada_t jugada_jugador2)
+{
+	resultado_jugada_t resultado;
+	resultado.jugador1 = ATAQUE_ERROR;
+	resultado.jugador2 = ATAQUE_ERROR;
+
+	if (!juego)
+		return resultado;
+
+	if (!jugada_disponible(juego->jugadores[JUGADOR1].jugadas_disponibles,jugada_jugador1))  //ejecuta abb_quitar 2 veces , una con el nombre del pokemon y otra con la del ataque O(N/2)
+	{
+		return resultado;
+	}
+
+	if (!jugada_disponible(juego->jugadores[JUGADOR2].jugadas_disponibles,jugada_jugador2))
+	{
+		return resultado;
+	}
+
+	//saca los pokemones en sus mochilas , si es q existen
+	pokemon_t *pkm1 = lista_buscar_elemento(juego->jugadores[JUGADOR1].sus_pokemones, comparar_nombres,jugada_jugador1.pokemon);  //en peor de los casos en O(N)
+	pokemon_t *pkm2 = lista_buscar_elemento(juego->jugadores[JUGADOR2].sus_pokemones, comparar_nombres,jugada_jugador2.pokemon);  //en peor de los casos en O(N)
+
+	if (!pkm1 || !pkm2)
+		return resultado;
+
+	//los pokemons tienen esos ataques?
+	const ataque_t *atk1 =
+		pokemon_buscar_ataque(pkm1, jugada_jugador1.ataque);  //O(N)
+	const ataque_t *atk2 =
+		pokemon_buscar_ataque(pkm2, jugada_jugador2.ataque); //O(N)
+
+	if (!atk1 || !atk2)
+		return resultado;
+
+	asignar_resultado(&resultado.jugador1, atk1, pkm2); //O(1)  Asignacion
+	asignar_resultado(&resultado.jugador2, atk2, pkm1);  //O(1)  Asignacion
+
+	asignar_puntaje(&juego->jugadores[JUGADOR1].puntaje, atk1,resultado.jugador1); //O(1)  Asignacion
+	asignar_puntaje(&juego->jugadores[JUGADOR2].puntaje, atk2,resultado.jugador2); //O(1)  Asignacion
+
+	juego->cantidad_movimientos--; //O(1)  Asignaciones
+
+	return resultado;
+}
+```
 
 </div>
