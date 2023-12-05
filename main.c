@@ -57,11 +57,20 @@ bool informacion_pokemones(void *menu);
 //auxiliares
 void jugador_seleccionar_pokemon( elecciones_t * elecciones);
 jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3);
-JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario);
+
+JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario,char * eleccion_adversario1, char * eleccion_adversario2, char * eleccion_adversario3);
 JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego, elecciones_t * jugador1 ,adversario_t*rival);
 void delay(int d);
 void vaciar_cargas_anteriores(lista_t * cargados);
 void vuelve_a_pedir(int *pkm1_p , char * buffer);
+int comparar_nombres_en_juego(void* pkm_actual ,void * objetivo );
+void mostrar_ataques(const struct ataque *atk, void *n);
+bool imprimir_nombre_pkm(void* pokemon ,void* posicion);
+bool imprimir_info_pkm(void* pokemon ,void* posicion);
+
+void destruir_elecciones(elecciones_t *elecciones);
+
+
 
 /*********************************************************************************************************************************************/
 
@@ -160,30 +169,41 @@ int main(int argc,  char *argv[])
 
 
 
+
+
+
+
+
+/*        PRINCIPALES     */
+
+/*Asigna y carga el archivo para las partidas*/
+
 bool pedir_archivo(void* menu)
 {
     JUEGO_ESTADO estado = TODO_OK;
   
     if(!menu)
      {
-          return false;
+
+          return MENU_ERROR;
      }
 
    
     bienvenida();
 
 	char *nombre_archivo = malloc(sizeof(char)*MAX_NOMBRE_ARCHIVO);
+    lista_t *l_pkm = juego_listar_pokemon(entregar_app(menu));
 
     if(nombre_archivo == NULL)
         {
             
+            vaciar_cargas_anteriores(l_pkm);
+
             carga_invalida();
-            return false;
+            return MENU_ERROR;
         }
     
-    lista_t *l_pkm = juego_listar_pokemon(entregar_app(menu));
-
-    vaciar_cargas_anteriores(l_pkm);
+   
 
 	puts(MSJ_PEDIR_ARCHIVO);
 
@@ -215,6 +235,7 @@ bool pedir_archivo(void* menu)
     return true;
 }
 
+
 void vaciar_cargas_anteriores(lista_t * cargados)
 {
     int tam =  (int)lista_tamanio(cargados);
@@ -228,74 +249,7 @@ void vaciar_cargas_anteriores(lista_t * cargados)
 
 }
 
-bool imprimir_nombre_pkm(void* pokemon ,void* posicion)
-{
-
-	pokemon_t * pkm = pokemon;
-
-	printf("\n [%d]: %s ",*(int*)posicion , pokemon_nombre(pkm));
-
-	(*(int *)posicion)++;
-
-	return true;
-
-}
-
-void mostrar_ataques(const struct ataque *atk, void *n)
-{
-    char* tipos[] = {"NORMAL","FUEGO","AGUA", "PLANTA", "ELECTRICO", "ROCA"};
-  
-    printf("\n\tAtaque: %s ( Poder: %u |Tipo: %s )\n ",atk->nombre,atk->poder,tipos[atk->tipo]);
-
-    
-}
-
-bool imprimir_info_pkm(void* pokemon ,void* posicion)
-{
-
-	pokemon_t * pkm = pokemon;
-
-    char* tipos[] = {" NORMAL","FUEGO","AGUA", "PLANTA", "ELECTRICO", "ROCA"};
-
-	printf("\n [%d]: %s     tipo: %s\n",*(int*)posicion , pokemon_nombre(pkm),tipos[pokemon_tipo(pkm)]);
-
-    con_cada_ataque(pkm,mostrar_ataques,NULL);
-    
-    printf("\n");
-
-	(*(int *)posicion)++;
-
-	return true;
-
-}
-
-bool informacion_pokemones(void *menu)
-{   
-    menu_t *menuu = menu;
-    juego_t * juego = entregar_app(menuu);
-
-    if(!entregar_nombre_archivo(menuu) || lista_vacia(juego_listar_pokemon(juego)))
-    {
-        puts(LIMPIAR_PANTALLA);
-        puts("No hay pokemons cargados en el juego");
-        return true;
-    }
-
-    lista_t *lista_pkm = juego_listar_pokemon(juego);
-
-    size_t *posiciones = calloc(1,sizeof(size_t));
-
-    lista_con_cada_elemento(lista_pkm,imprimir_info_pkm,posiciones);
-
-    	
-	free(posiciones);
-
-    puts("\n");
-
-    return true;
-    
-}
-
+/*     Muestra los pokemones                  */
  bool mostrar_pokemon_disponibles(void * menu)
  {
 	if(menu == NULL )
@@ -304,12 +258,8 @@ bool informacion_pokemones(void *menu)
         return false;
     }
 
-
-
 	lista_t *lista_pkm = juego_listar_pokemon((juego_t*)entregar_app(menu));
-
 	
-
      if(entregar_nombre_archivo(menu) == NULL || lista_vacia(lista_pkm))
     {
         puts(MSJ_NO_HAY_POKEMONES_CARGADOS);
@@ -363,6 +313,37 @@ bool informacion_pokemones(void *menu)
  }
 
 
+/*          Informacion de pokemones y reglas del juego                */
+bool informacion_pokemones(void *menu)
+{   
+    menu_t *menuu = menu;
+    juego_t * juego = entregar_app(menuu);
+
+    if(!entregar_nombre_archivo(menuu) || lista_vacia(juego_listar_pokemon(juego)))
+    {
+        puts(LIMPIAR_PANTALLA);
+        puts("No hay pokemons cargados en el juego");
+        return true;
+    }
+
+    lista_t *lista_pkm = juego_listar_pokemon(juego);
+
+    size_t *posiciones = calloc(1,sizeof(size_t));
+
+    lista_con_cada_elemento(lista_pkm,imprimir_info_pkm,posiciones);
+
+    	
+	free(posiciones);
+
+    puts("\n");
+
+    return true;
+    
+}
+
+
+/*             Partida    */
+
 bool jugar(void* menu)
 {
     menu_t * menu_ = menu;
@@ -383,22 +364,32 @@ bool jugar(void* menu)
    
     adversario_t *rival = adversario_crear(juego_listar_pokemon((juego_t*)juego)); //TODO_OK = 0 , 
     
+        
+    char *eleccion_adversario1 = NULL, *eleccion_adversario2 = NULL, *eleccion_adversario3 = NULL;
+    
+	eleccion_adversario1 = calloc(1,sizeof(char)*MAX_NOMBRE);
+	eleccion_adversario2 = calloc(1,sizeof(char)*MAX_NOMBRE);
+	eleccion_adversario3 = calloc(1,sizeof(char)*MAX_NOMBRE);
     
     jugador1_e->juego = juego;
 
-    estado = precompetencia(menu,juego,jugador1_e,rival);
+    estado = precompetencia(menu,juego,jugador1_e,rival,eleccion_adversario1,eleccion_adversario2,eleccion_adversario3);
 
     estado = competencia(menu,juego,jugador1_e,rival);
  
    
     adversario_destruir(rival);
-    free(jugador1_e);
+   
+    destruir_elecciones(jugador1_e);
+    free(eleccion_adversario1);
+    free(eleccion_adversario2);
+    free(eleccion_adversario3);
     puts(MENSAJE_FIN_PARTIDA);
     return !estado;
 
 }
 
-JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario)
+JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador1 , adversario_t * adversario,char * eleccion_adversario1, char * eleccion_adversario2, char * eleccion_adversario3)
 {
     int * posiciones = calloc(1,sizeof(int));
 
@@ -422,17 +413,9 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
          return false;
        }
      
-  
-    
-    char *eleccion_adversario1 = NULL, *eleccion_adversario2 = NULL, *eleccion_adversario3 = NULL;
-    
-	eleccion_adversario1 = calloc(1,sizeof(char)*MAX_NOMBRE);
-	eleccion_adversario2 = calloc(1,sizeof(char)*MAX_NOMBRE);
-	eleccion_adversario3 = calloc(1,sizeof(char)*MAX_NOMBRE);
-
 
     //Esto lo completa de forma automatica
-     adversario_seleccionar_pokemon(adversario,&eleccion_adversario1,&eleccion_adversario2,&eleccion_adversario3);
+    adversario_seleccionar_pokemon(adversario,&eleccion_adversario1,&eleccion_adversario2,&eleccion_adversario3);
 
     //Aca le guarda en juego_t  e intercambia 
     estado = juego_seleccionar_pokemon(juego,JUGADOR2,jugador1->eleccionJugador1,jugador1->eleccionJugador2,jugador1->eleccionJugador3);
@@ -456,17 +439,15 @@ JUEGO_ESTADO precompetencia(menu_t *menu ,juego_t *juego, elecciones_t * jugador
         return false;
     }
 
+
     printf("\nTurno de elegir pokemones del adversario \n");
 
+    
+    
     free(posiciones);
     return estado;
 }
 
-
-int comparar_nombres_en_juego(void* pkm_actual ,void * objetivo )
-{
-	return strcmp(pokemon_nombre(pkm_actual),objetivo);
-}
 
 JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1,adversario_t*rival)
 {
@@ -520,6 +501,12 @@ JUEGO_ESTADO competencia(menu_t *menu,juego_t *juego,elecciones_t *elecciones_j1
          ronda_n++;
 	}
    
+    if( juego_obtener_puntaje(juego,JUGADOR1) < juego_obtener_puntaje(juego,JUGADOR2) )
+    {
+         pierde();
+    }else gana();
+
+
 
     printf("\n\n\tResultado Partida:\nJugador 1 %d\nAdversario %d\n", juego_obtener_puntaje(juego,JUGADOR1), juego_obtener_puntaje(juego,JUGADOR2));
 
@@ -596,7 +583,6 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
 }
 
 
-
  void jugador_seleccionar_pokemon( elecciones_t * elecciones)
  {
     
@@ -669,10 +655,13 @@ jugada_t elige_jugada_j1(menu_t *menu,juego_t *juego,char*p1,char*p2,char*p3)
 
 		elecciones->eleccionJugador3 = (char*)pokemon_nombre(lista_elemento_en_posicion(lista_pkm,(size_t)pkm3_p));
 
-		
-
 			
  }
+
+
+
+
+//SIMPLES
 
 void vuelve_a_pedir(int *pkm1_p , char * buffer)
 {
@@ -681,10 +670,6 @@ void vuelve_a_pedir(int *pkm1_p , char * buffer)
     *pkm1_p = atoi(buffer);
 }
 
-
-
-
-//SIMPLES
 
 void delay(int d)
 {
@@ -697,4 +682,57 @@ void delay(int d)
 bool salir_juego(void *menu ) 
 {
     return false;
+}
+
+
+bool imprimir_nombre_pkm(void* pokemon ,void* posicion)
+{
+
+	pokemon_t * pkm = pokemon;
+
+	printf("\n [%d]: %s ",*(int*)posicion , pokemon_nombre(pkm));
+
+	(*(int *)posicion)++;
+
+	return true;
+
+}
+
+void mostrar_ataques(const struct ataque *atk, void *n)
+{
+   
+    printf("\n\tAtaque: %s ( Poder: %u |Tipo: %s )\n ",atk->nombre,atk->poder,tipos[atk->tipo]);
+    
+}
+
+bool imprimir_info_pkm(void* pokemon ,void* posicion)
+{
+
+	pokemon_t * pkm = pokemon;
+
+	printf("\n [%d]: %s     tipo: %s\n",*(int*)posicion , pokemon_nombre(pkm),tipos[pokemon_tipo(pkm)]);
+
+    con_cada_ataque(pkm,mostrar_ataques,NULL);
+    
+    printf("\n");
+
+	(*(int *)posicion)++;
+
+	return true;
+
+}
+
+int comparar_nombres_en_juego(void* pkm_actual ,void * objetivo )
+{
+	return strcmp(pokemon_nombre(pkm_actual),objetivo);
+}
+
+
+ 
+
+void destruir_elecciones(elecciones_t *elecciones)
+{
+
+    free(elecciones);
+
 }
